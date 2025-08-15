@@ -7,8 +7,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BottomNavigation from "@/components/BottomNavigation";
 
-// Mock data for categories
-const categories = [
+// Mock data for mobile categories (circular)
+const mobileCategories = [
   {
     id: 1,
     name: "Categories",
@@ -38,6 +38,50 @@ const categories = [
     name: "Home",
     image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=100&h=100&fit=crop",
     icon: "🏠"
+  },
+];
+
+// Desktop category tiles (horizontal layout like Meesho)
+const desktopCategories = [
+  {
+    id: 1,
+    name: "Ethnic Wear",
+    image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=150&h=150&fit=crop",
+  },
+  {
+    id: 2,
+    name: "Western Dresses",
+    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=150&h=150&fit=crop",
+  },
+  {
+    id: 3,
+    name: "Menswear",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
+  },
+  {
+    id: 4,
+    name: "Footwear",
+    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=150&h=150&fit=crop",
+  },
+  {
+    id: 5,
+    name: "Home Decor",
+    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=150&h=150&fit=crop",
+  },
+  {
+    id: 6,
+    name: "Beauty",
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=150&h=150&fit=crop",
+  },
+  {
+    id: 7,
+    name: "Accessories",
+    image: "https://images.unsplash.com/photo-1523359346063-d879354c0ea5?w=150&h=150&fit=crop",
+  },
+  {
+    id: 8,
+    name: "Grocery",
+    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=150&h=150&fit=crop",
   },
 ];
 
@@ -79,24 +123,6 @@ const trendingProducts = [
     rating: 4.3,
     reviews: 67
   },
-  {
-    id: 5,
-    name: "Premium Leather Wallet",
-    price: 1999,
-    originalPrice: 2999,
-    image: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=300&h=300&fit=crop",
-    rating: 4.6,
-    reviews: 156
-  },
-  {
-    id: 6,
-    name: "Organic Face Cream",
-    price: 899,
-    originalPrice: 1399,
-    image: "https://images.unsplash.com/photo-1612817288484-6f916006741a?w=300&h=300&fit=crop",
-    rating: 4.4,
-    reviews: 203
-  },
 ];
 
 export default function Index() {
@@ -109,7 +135,7 @@ export default function Index() {
         <section className="py-4 bg-white md:hidden">
           <div className="px-4">
             <div className="flex justify-between items-center">
-              {categories.map((category) => (
+              {mobileCategories.map((category) => (
                 <Link
                   key={category.id}
                   to={`/products?category=${category.name.toLowerCase()}`}
@@ -131,70 +157,97 @@ export default function Index() {
           </div>
         </section>
 
-        {/* Desktop Hero Section */}
-        <section className="bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 hidden md:block">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            <div className="text-center text-white">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                Shop the Best Deals on SamaySagar
-              </h1>
-              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
-                Discover millions of products at unbeatable prices. Quality guaranteed, satisfaction delivered.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" variant="secondary" className="px-8 py-4 text-lg">
-                  Shop Now
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-                <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-white text-white hover:bg-white hover:text-purple-600">
-                  Explore Categories
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Desktop Featured Categories */}
-        <section className="py-16 hidden md:block">
+        {/* Desktop Category Tiles - Horizontal Layout like Meesho */}
+        <section className="py-6 bg-white hidden md:block">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Shop by Category
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Find exactly what you're looking for in our carefully curated categories
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-              {categories.map((category) => (
+            <div className="grid grid-cols-8 gap-4">
+              {desktopCategories.map((category) => (
                 <Link
                   key={category.id}
                   to={`/products?category=${category.name.toLowerCase()}`}
-                  className="group"
+                  className="flex flex-col items-center group"
                 >
-                  <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                    <div className="aspect-square overflow-hidden">
-                      <img
-                        src={category.image}
-                        alt={category.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <CardContent className="p-4 text-center">
-                      <h3 className="font-semibold text-gray-900 mb-1">{category.name}</h3>
-                      <p className="text-sm text-gray-600">Trending styles</p>
-                    </CardContent>
-                  </Card>
+                  <div className="w-20 h-20 rounded-lg overflow-hidden mb-2 group-hover:shadow-lg transition-shadow">
+                    <img
+                      src={category.image}
+                      alt={category.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <span className="text-sm text-gray-700 text-center font-medium">
+                    {category.name}
+                  </span>
                 </Link>
               ))}
             </div>
           </div>
         </section>
 
+        {/* Desktop Large Banner Section - Like Meesho */}
+        <section className="hidden md:block">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative h-96 rounded-lg overflow-hidden bg-gradient-to-r from-amber-50 to-rose-50">
+              {/* Background Image */}
+              <div className="absolute inset-0">
+                <img
+                  src="https://images.unsplash.com/photo-1583391733956-6c78276477e1?w=1200&h=400&fit=crop"
+                  alt="Traditional Fashion Banner"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+              </div>
+              
+              {/* Content Overlay */}
+              <div className="relative z-10 h-full flex items-center">
+                <div className="w-1/2 p-12">
+                  <h2 className="text-4xl font-bold text-white mb-4 drop-shadow-lg">
+                    Traditional Elegance
+                  </h2>
+                  <p className="text-xl text-white mb-6 drop-shadow">
+                    Discover the finest collection of ethnic wear for every occasion
+                  </p>
+                  <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+                    Shop Now
+                  </Button>
+                </div>
+                
+                {/* Right Side Category Cards */}
+                <div className="w-1/2 flex justify-end p-12">
+                  <div className="space-y-4">
+                    <div className="bg-white bg-opacity-90 rounded-lg p-4 backdrop-blur-sm">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 rounded-full overflow-hidden">
+                          <img
+                            src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=100&h=100&fit=crop"
+                            alt="Lehengas"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <span className="font-semibold text-gray-800">Lehengas</span>
+                      </div>
+                    </div>
+                    <div className="bg-white bg-opacity-90 rounded-lg p-4 backdrop-blur-sm">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 rounded-full overflow-hidden">
+                          <img
+                            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
+                            alt="Menwear"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <span className="font-semibold text-gray-800">Menwear</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Products For You Section - Mobile First */}
-        <section className="bg-white">
-          <div className="px-4 py-4">
+        <section className="bg-white mt-6 md:mt-8">
+          <div className="px-4 py-4 md:max-w-7xl md:mx-auto md:px-6 lg:px-8">
             <h2 className="text-xl font-bold text-gray-900 mb-4">
               Products For You
             </h2>
@@ -220,7 +273,7 @@ export default function Index() {
             </div>
 
             {/* Desktop Filter Bar */}
-            <div className="hidden md:flex flex-col md:flex-row justify-between items-center mb-12">
+            <div className="hidden md:flex flex-col md:flex-row justify-between items-center mb-8">
               <div>
                 <p className="text-lg text-gray-600">
                   Popular picks loved by our customers
@@ -235,7 +288,7 @@ export default function Index() {
             </div>
 
             {/* Product Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6">
               {trendingProducts.map((product) => (
                 <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
                   <div className="aspect-square overflow-hidden relative">
