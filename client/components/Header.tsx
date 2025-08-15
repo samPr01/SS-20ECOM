@@ -1,4 +1,4 @@
-import { Search, ShoppingCart, Menu, X, Heart, MapPin } from "lucide-react";
+import { Search, ShoppingCart, Menu, X, Heart, MapPin, User } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -98,11 +98,8 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">SS</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">SamaySagar</span>
+            <Link to="/" className="flex items-center">
+              <span className="text-2xl font-bold text-purple-600">SamaySagar</span>
             </Link>
 
             {/* Search Bar */}
@@ -110,7 +107,7 @@ export default function Header() {
               <div className="relative w-full">
                 <Input
                   type="text"
-                  placeholder="Search for products..."
+                  placeholder="Try Sarees, Kurti or Search by Product Code"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -119,31 +116,78 @@ export default function Header() {
               </div>
             </div>
 
-            {/* Navigation Links */}
-            <nav className="flex items-center space-x-6">
-              <Link to="/products" className="text-gray-700 hover:text-purple-600 font-medium">
-                Products
+            {/* Right Side Links */}
+            <div className="flex items-center space-x-6">
+              <Link to="/supplier" className="text-gray-700 hover:text-purple-600 text-sm">
+                Become a Supplier
               </Link>
-              <Link to="/categories" className="text-gray-700 hover:text-purple-600 font-medium">
-                Categories
+              <Link to="/investor" className="text-gray-700 hover:text-purple-600 text-sm">
+                Investor Relations
               </Link>
-              <Link to="/deals" className="text-gray-700 hover:text-purple-600 font-medium">
-                Deals
-              </Link>
-            </nav>
-
-            {/* Cart Icon */}
-            <div className="flex items-center space-x-4">
-              <Link to="/cart" className="relative p-2 text-gray-700 hover:text-purple-600">
-                <ShoppingCart className="w-6 h-6" />
-                <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  0
-                </span>
-              </Link>
+              
+              <div className="flex items-center space-x-4 ml-6">
+                <Link to="/profile" className="flex flex-col items-center text-gray-700 hover:text-purple-600">
+                  <User className="w-5 h-5" />
+                  <span className="text-xs">Profile</span>
+                </Link>
+                <Link to="/cart" className="flex flex-col items-center text-gray-700 hover:text-purple-600 relative">
+                  <ShoppingCart className="w-5 h-5" />
+                  <span className="text-xs">Cart</span>
+                  <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    0
+                  </span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Desktop Category Navigation */}
+      <nav className="bg-white border-b border-gray-200 hidden md:block">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-3">
+            <div className="flex items-center space-x-8">
+              <Link to="/women-ethnic" className="text-gray-700 hover:text-purple-600 text-sm">
+                Women Ethnic
+              </Link>
+              <Link to="/women-western" className="text-gray-700 hover:text-purple-600 text-sm">
+                Women Western
+              </Link>
+              <Link to="/men" className="text-gray-700 hover:text-purple-600 text-sm">
+                Men
+              </Link>
+              <Link to="/kids" className="text-gray-700 hover:text-purple-600 text-sm">
+                Kids
+              </Link>
+              <Link to="/home-kitchen" className="text-gray-700 hover:text-purple-600 text-sm">
+                Home & Kitchen
+              </Link>
+              <Link to="/beauty-health" className="text-gray-700 hover:text-purple-600 text-sm">
+                Beauty & Health
+              </Link>
+              <Link to="/jewellery" className="text-gray-700 hover:text-purple-600 text-sm">
+                Jewellery & Accessories
+              </Link>
+              <Link to="/bags" className="text-gray-700 hover:text-purple-600 text-sm">
+                Bags & Footwear
+              </Link>
+              <Link to="/electronics" className="text-gray-700 hover:text-purple-600 text-sm">
+                Electronics
+              </Link>
+              <Link to="/sports" className="text-gray-700 hover:text-purple-600 text-sm">
+                Sports & Fitness
+              </Link>
+              <Link to="/automotive" className="text-gray-700 hover:text-purple-600 text-sm">
+                Car & Motorbike
+              </Link>
+              <Link to="/office" className="text-gray-700 hover:text-purple-600 text-sm">
+                Office
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
     </>
   );
 }
