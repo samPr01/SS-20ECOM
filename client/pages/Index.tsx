@@ -146,7 +146,7 @@ export default function Index() {
               {mobileCategories.map((category) => (
                 <Link
                   key={category.id}
-                  to={`/products?category=${category.name.toLowerCase()}`}
+                  to={category.url}
                   className="flex flex-col items-center space-y-2"
                 >
                   <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200">
@@ -172,7 +172,7 @@ export default function Index() {
               {desktopCategories.map((category) => (
                 <Link
                   key={category.id}
-                  to={`/products?category=${category.name.toLowerCase()}`}
+                  to={category.url}
                   className="flex flex-col items-center group"
                 >
                   <div className="w-20 h-20 rounded-lg overflow-hidden mb-2 group-hover:shadow-lg transition-shadow">
