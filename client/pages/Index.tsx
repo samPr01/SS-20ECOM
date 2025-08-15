@@ -39,6 +39,36 @@ const mobileCategories = [
     image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=100&h=100&fit=crop",
     url: "/home-kitchen"
   },
+  {
+    id: 6,
+    name: "Beauty",
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=100&h=100&fit=crop",
+    url: "/beauty-health"
+  },
+  {
+    id: 7,
+    name: "Electronics",
+    image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=100&h=100&fit=crop",
+    url: "/electronics"
+  },
+  {
+    id: 8,
+    name: "Jewellery",
+    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=100&h=100&fit=crop",
+    url: "/jewellery"
+  },
+  {
+    id: 9,
+    name: "Bags & Footwear",
+    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=100&h=100&fit=crop",
+    url: "/bags"
+  },
+  {
+    id: 10,
+    name: "Sports",
+    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=100&h=100&fit=crop",
+    url: "/sports"
+  },
 ];
 
 // Desktop category tiles (horizontal layout like Meesho) - matching all category pages
@@ -142,14 +172,14 @@ export default function Index() {
         {/* Mobile Categories - Circular icons like Meesho */}
         <section className="py-4 bg-white md:hidden">
           <div className="px-4">
-            <div className="flex justify-between items-center">
+            <div className="grid grid-cols-5 gap-4">
               {mobileCategories.map((category) => (
                 <Link
                   key={category.id}
                   to={category.url}
                   className="flex flex-col items-center space-y-2"
                 >
-                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200">
+                  <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-200">
                     <img
                       src={category.image}
                       alt={category.name}
