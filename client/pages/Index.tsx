@@ -350,20 +350,6 @@ export default function Index() {
           </div>
         </section>
 
-        {/* Call to Action - Desktop Only */}
-        <section className="py-16 bg-gray-900 text-white hidden md:block">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to Start Shopping?
-            </h2>
-            <p className="text-lg mb-8 opacity-90">
-              Join millions of satisfied customers and discover amazing deals every day.
-            </p>
-            <Button size="lg" variant="secondary" className="px-8 py-4 text-lg">
-              Start Shopping Now
-            </Button>
-          </div>
-        </section>
       </main>
 
       {/* Footer - Desktop Only */}
