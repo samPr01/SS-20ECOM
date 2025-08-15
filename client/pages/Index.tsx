@@ -2,7 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { ShoppingCart, Star, ArrowRight, SlidersHorizontal, ArrowUpDown } from "lucide-react";
+import {
+  ShoppingCart,
+  Star,
+  ArrowRight,
+  SlidersHorizontal,
+  ArrowUpDown,
+} from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BottomNavigation from "@/components/BottomNavigation";
@@ -12,62 +18,72 @@ const mobileCategories = [
   {
     id: 1,
     name: "Women Ethnic",
-    image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=100&h=100&fit=crop",
-    url: "/women-ethnic"
+    image:
+      "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=100&h=100&fit=crop",
+    url: "/women-ethnic",
   },
   {
     id: 2,
     name: "Women Western",
-    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100&h=100&fit=crop",
-    url: "/women-western"
+    image:
+      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100&h=100&fit=crop",
+    url: "/women-western",
   },
   {
     id: 3,
     name: "Men",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-    url: "/men"
+    image:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+    url: "/men",
   },
   {
     id: 4,
     name: "Kids",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop",
-    url: "/kids"
+    image:
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop",
+    url: "/kids",
   },
   {
     id: 5,
     name: "Home & Kitchen",
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=100&h=100&fit=crop",
-    url: "/home-kitchen"
+    image:
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=100&h=100&fit=crop",
+    url: "/home-kitchen",
   },
   {
     id: 6,
     name: "Beauty",
-    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=100&h=100&fit=crop",
-    url: "/beauty-health"
+    image:
+      "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=100&h=100&fit=crop",
+    url: "/beauty-health",
   },
   {
     id: 7,
     name: "Electronics",
-    image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=100&h=100&fit=crop",
-    url: "/electronics"
+    image:
+      "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=100&h=100&fit=crop",
+    url: "/electronics",
   },
   {
     id: 8,
     name: "Jewellery",
-    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=100&h=100&fit=crop",
-    url: "/jewellery"
+    image:
+      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=100&h=100&fit=crop",
+    url: "/jewellery",
   },
   {
     id: 9,
     name: "Bags & Footwear",
-    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=100&h=100&fit=crop",
-    url: "/bags"
+    image:
+      "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=100&h=100&fit=crop",
+    url: "/bags",
   },
   {
     id: 10,
     name: "Sports",
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=100&h=100&fit=crop",
-    url: "/sports"
+    image:
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=100&h=100&fit=crop",
+    url: "/sports",
   },
 ];
 
@@ -76,50 +92,58 @@ const desktopCategories = [
   {
     id: 1,
     name: "Women Ethnic",
-    image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=150&h=150&fit=crop",
-    url: "/women-ethnic"
+    image:
+      "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=150&h=150&fit=crop",
+    url: "/women-ethnic",
   },
   {
     id: 2,
     name: "Women Western",
-    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=150&h=150&fit=crop",
-    url: "/women-western"
+    image:
+      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=150&h=150&fit=crop",
+    url: "/women-western",
   },
   {
     id: 3,
     name: "Men",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
-    url: "/men"
+    image:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
+    url: "/men",
   },
   {
     id: 4,
     name: "Kids",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=150&h=150&fit=crop",
-    url: "/kids"
+    image:
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=150&h=150&fit=crop",
+    url: "/kids",
   },
   {
     id: 5,
     name: "Home & Kitchen",
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=150&h=150&fit=crop",
-    url: "/home-kitchen"
+    image:
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=150&h=150&fit=crop",
+    url: "/home-kitchen",
   },
   {
     id: 6,
     name: "Beauty & Health",
-    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=150&h=150&fit=crop",
-    url: "/beauty-health"
+    image:
+      "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=150&h=150&fit=crop",
+    url: "/beauty-health",
   },
   {
     id: 7,
     name: "Electronics",
-    image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=150&h=150&fit=crop",
-    url: "/electronics"
+    image:
+      "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=150&h=150&fit=crop",
+    url: "/electronics",
   },
   {
     id: 8,
     name: "Jewellery",
-    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=150&h=150&fit=crop",
-    url: "/jewellery"
+    image:
+      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=150&h=150&fit=crop",
+    url: "/jewellery",
   },
 ];
 
@@ -130,36 +154,40 @@ const trendingProducts = [
     name: "Wireless Bluetooth Headphones",
     price: 2999,
     originalPrice: 4999,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop",
     rating: 4.5,
-    reviews: 128
+    reviews: 128,
   },
   {
     id: 2,
     name: "Cotton Casual T-Shirt",
     price: 599,
     originalPrice: 999,
-    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop",
     rating: 4.2,
-    reviews: 89
+    reviews: 89,
   },
   {
     id: 3,
     name: "Smart Fitness Watch",
     price: 8999,
     originalPrice: 12999,
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop",
     rating: 4.7,
-    reviews: 245
+    reviews: 245,
   },
   {
     id: 4,
     name: "Ceramic Coffee Mug Set",
     price: 1299,
     originalPrice: 1899,
-    image: "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?w=300&h=300&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?w=300&h=300&fit=crop",
     rating: 4.3,
-    reviews: 67
+    reviews: 67,
   },
 ];
 
@@ -167,7 +195,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
       <Header />
-      
+
       <main>
         {/* Mobile Categories - Circular icons like Meesho */}
         <section className="py-4 bg-white md:hidden">
@@ -234,7 +262,7 @@ export default function Index() {
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-20"></div>
               </div>
-              
+
               {/* Content Overlay */}
               <div className="relative z-10 h-full flex items-center">
                 <div className="w-1/2 p-12">
@@ -242,13 +270,17 @@ export default function Index() {
                     Traditional Elegance
                   </h2>
                   <p className="text-xl text-white mb-6 drop-shadow">
-                    Discover the finest collection of ethnic wear for every occasion
+                    Discover the finest collection of ethnic wear for every
+                    occasion
                   </p>
-                  <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+                  <Button
+                    size="lg"
+                    className="bg-white text-purple-600 hover:bg-gray-100"
+                  >
                     Shop Now
                   </Button>
                 </div>
-                
+
                 {/* Right Side Category Cards */}
                 <div className="w-1/2 flex justify-end p-12">
                   <div className="space-y-4">
@@ -261,7 +293,9 @@ export default function Index() {
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <span className="font-semibold text-gray-800">Lehengas</span>
+                        <span className="font-semibold text-gray-800">
+                          Lehengas
+                        </span>
                       </div>
                     </div>
                     <div className="bg-white bg-opacity-90 rounded-lg p-4 backdrop-blur-sm">
@@ -273,7 +307,9 @@ export default function Index() {
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <span className="font-semibold text-gray-800">Menwear</span>
+                        <span className="font-semibold text-gray-800">
+                          Menwear
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -328,7 +364,10 @@ export default function Index() {
             {/* Product Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6">
               {trendingProducts.map((product) => (
-                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
+                <Card
+                  key={product.id}
+                  className="overflow-hidden hover:shadow-lg transition-shadow duration-300 group"
+                >
                   <div className="aspect-square overflow-hidden relative">
                     <img
                       src={product.image}
@@ -336,17 +375,22 @@ export default function Index() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <Badge className="absolute top-2 left-2 bg-red-500 text-white text-xs">
-                      {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                      {Math.round(
+                        ((product.originalPrice - product.price) /
+                          product.originalPrice) *
+                          100,
+                      )}
+                      % OFF
                     </Badge>
                   </div>
-                  
+
                   <CardContent className="p-3 md:p-4">
                     <Link to={`/product/${product.id}`}>
                       <h3 className="font-medium text-gray-900 mb-2 hover:text-purple-600 transition-colors line-clamp-2 text-sm md:text-base">
                         {product.name}
                       </h3>
                     </Link>
-                    
+
                     <div className="flex items-center mb-2 md:hidden">
                       <div className="flex items-center">
                         <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
@@ -387,7 +431,6 @@ export default function Index() {
             </div>
           </div>
         </section>
-
       </main>
 
       {/* Footer - Desktop Only */}

@@ -9,7 +9,7 @@ export default function Cart() {
     "Saved items and move to wishlist",
     "Guest and user checkout options",
     "Multiple payment methods support",
-    "Order summary and confirmation"
+    "Order summary and confirmation",
   ];
 
   return (

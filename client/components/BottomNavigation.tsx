@@ -18,15 +18,13 @@ export default function BottomNavigation() {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
-          
+
           return (
             <Link
               key={item.path}
               to={item.path}
               className={`flex-1 flex flex-col items-center py-2 px-1 ${
-                isActive 
-                  ? "text-purple-600" 
-                  : "text-gray-600"
+                isActive ? "text-purple-600" : "text-gray-600"
               }`}
             >
               <Icon className="w-6 h-6 mb-1" />

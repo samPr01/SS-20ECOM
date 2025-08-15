@@ -9,7 +9,7 @@ export default function ProductDetail() {
     "Stock availability and delivery information",
     "Related products and recommendations",
     "Add to cart and buy now functionality",
-    "Share and wishlist options"
+    "Share and wishlist options",
   ];
 
   return (

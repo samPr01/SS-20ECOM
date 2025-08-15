@@ -7,7 +7,7 @@ export default function Products() {
     "Product comparison functionality",
     "Wishlist and save for later options",
     "Quick view and zoom functionality",
-    "Bulk ordering capabilities"
+    "Bulk ordering capabilities",
   ];
 
   return (

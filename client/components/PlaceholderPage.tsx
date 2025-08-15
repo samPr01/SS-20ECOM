@@ -11,11 +11,15 @@ interface PlaceholderPageProps {
   features?: string[];
 }
 
-export default function PlaceholderPage({ title, description, features }: PlaceholderPageProps) {
+export default function PlaceholderPage({
+  title,
+  description,
+  features,
+}: PlaceholderPageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       <main className="py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Card className="text-center">
@@ -30,7 +34,7 @@ export default function PlaceholderPage({ title, description, features }: Placeh
                 {description}
               </p>
             </CardHeader>
-            
+
             <CardContent className="pb-8">
               {features && (
                 <div className="mb-8">
@@ -47,7 +51,7 @@ export default function PlaceholderPage({ title, description, features }: Placeh
                   </div>
                 </div>
               )}
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/">
                   <Button size="lg" className="px-6 py-3">
@@ -63,7 +67,7 @@ export default function PlaceholderPage({ title, description, features }: Placeh
           </Card>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

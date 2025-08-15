@@ -2,7 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { ShoppingCart, Star, SlidersHorizontal, ArrowUpDown, Grid3X3, List } from "lucide-react";
+import {
+  ShoppingCart,
+  Star,
+  SlidersHorizontal,
+  ArrowUpDown,
+  Grid3X3,
+  List,
+} from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BottomNavigation from "@/components/BottomNavigation";
@@ -26,11 +33,17 @@ interface CategoryPageProps {
   subcategories?: string[];
 }
 
-export default function CategoryPage({ title, description, bannerImage, products, subcategories }: CategoryPageProps) {
+export default function CategoryPage({
+  title,
+  description,
+  bannerImage,
+  products,
+  subcategories,
+}: CategoryPageProps) {
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
       <Header />
-      
+
       <main>
         {/* Category Banner */}
         {bannerImage && (
@@ -65,7 +78,9 @@ export default function CategoryPage({ title, description, bannerImage, products
           <section className="hidden md:block bg-white border-b">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
               <div className="flex items-center space-x-6">
-                <span className="text-sm font-medium text-gray-700">Categories:</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Categories:
+                </span>
                 {subcategories.map((subcat, index) => (
                   <Link
                     key={index}
@@ -124,7 +139,10 @@ export default function CategoryPage({ title, description, bannerImage, products
             {/* Product Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
               {products.map((product) => (
-                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
+                <Card
+                  key={product.id}
+                  className="overflow-hidden hover:shadow-lg transition-shadow duration-300 group"
+                >
                   <div className="aspect-square overflow-hidden relative">
                     <img
                       src={product.image}
@@ -132,26 +150,36 @@ export default function CategoryPage({ title, description, bannerImage, products
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <Badge className="absolute top-2 left-2 bg-red-500 text-white text-xs">
-                      {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                      {Math.round(
+                        ((product.originalPrice - product.price) /
+                          product.originalPrice) *
+                          100,
+                      )}
+                      % OFF
                     </Badge>
                   </div>
-                  
+
                   <CardContent className="p-3 md:p-4">
                     <Link to={`/product/${product.id}`}>
                       <h3 className="font-medium text-gray-900 mb-2 hover:text-purple-600 transition-colors line-clamp-2 text-sm md:text-base">
                         {product.name}
                       </h3>
                     </Link>
-                    
+
                     {product.brand && (
-                      <p className="text-xs text-gray-500 mb-1">{product.brand}</p>
+                      <p className="text-xs text-gray-500 mb-1">
+                        {product.brand}
+                      </p>
                     )}
-                    
+
                     <div className="flex items-center mb-2">
                       <div className="flex items-center">
                         <Star className="w-3 h-3 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
                         <span className="text-xs md:text-sm text-gray-600 ml-1">
-                          {product.rating} <span className="hidden md:inline">({product.reviews})</span>
+                          {product.rating}{" "}
+                          <span className="hidden md:inline">
+                            ({product.reviews})
+                          </span>
                         </span>
                       </div>
                     </div>
