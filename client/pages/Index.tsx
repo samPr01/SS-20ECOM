@@ -7,81 +7,89 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BottomNavigation from "@/components/BottomNavigation";
 
-// Mock data for mobile categories (circular)
+// Mobile categories (circular) - matching all desktop categories
 const mobileCategories = [
   {
     id: 1,
-    name: "Categories",
-    image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop",
-    icon: "🏷️"
+    name: "Women Ethnic",
+    image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=100&h=100&fit=crop",
+    url: "/women-ethnic"
   },
   {
     id: 2,
-    name: "Kurti & Dresses",
-    image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=100&h=100&fit=crop",
-    icon: "👗"
+    name: "Women Western",
+    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100&h=100&fit=crop",
+    url: "/women-western"
   },
   {
     id: 3,
-    name: "Kids & Toys",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop",
-    icon: "🧸"
+    name: "Men",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+    url: "/men"
   },
   {
     id: 4,
-    name: "Westernwear",
-    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100&h=100&fit=crop",
-    icon: "👔"
+    name: "Kids",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop",
+    url: "/kids"
   },
   {
     id: 5,
-    name: "Home",
+    name: "Home & Kitchen",
     image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=100&h=100&fit=crop",
-    icon: "🏠"
+    url: "/home-kitchen"
   },
 ];
 
-// Desktop category tiles (horizontal layout like Meesho)
+// Desktop category tiles (horizontal layout like Meesho) - matching all category pages
 const desktopCategories = [
   {
     id: 1,
-    name: "Ethnic Wear",
+    name: "Women Ethnic",
     image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=150&h=150&fit=crop",
+    url: "/women-ethnic"
   },
   {
     id: 2,
-    name: "Western Dresses",
+    name: "Women Western",
     image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=150&h=150&fit=crop",
+    url: "/women-western"
   },
   {
     id: 3,
-    name: "Menswear",
+    name: "Men",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
+    url: "/men"
   },
   {
     id: 4,
-    name: "Footwear",
-    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=150&h=150&fit=crop",
+    name: "Kids",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=150&h=150&fit=crop",
+    url: "/kids"
   },
   {
     id: 5,
-    name: "Home Decor",
-    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=150&h=150&fit=crop",
+    name: "Home & Kitchen",
+    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=150&h=150&fit=crop",
+    url: "/home-kitchen"
   },
   {
     id: 6,
-    name: "Beauty",
+    name: "Beauty & Health",
     image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=150&h=150&fit=crop",
+    url: "/beauty-health"
   },
   {
     id: 7,
-    name: "Accessories",
-    image: "https://images.unsplash.com/photo-1523359346063-d879354c0ea5?w=150&h=150&fit=crop",
+    name: "Electronics",
+    image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=150&h=150&fit=crop",
+    url: "/electronics"
   },
   {
     id: 8,
-    name: "Grocery",
-    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=150&h=150&fit=crop",
+    name: "Jewellery",
+    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=150&h=150&fit=crop",
+    url: "/jewellery"
   },
 ];
 
