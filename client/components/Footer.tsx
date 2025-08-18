@@ -11,7 +11,7 @@ export default function Footer() {
               <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">SS</span>
               </div>
-              <span className="text-xl font-bold">SamaySagar</span>
+              <span className="text-xl font-bold">SS Stores</span>
             </div>
             <p className="text-gray-400 text-sm">
               Your trusted marketplace for quality products at unbeatable
@@ -211,7 +211,7 @@ export default function Footer() {
         {/* Bottom Section */}
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © 2024 SamaySagar. All rights reserved.
+            © 2024 SS Stores. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a
