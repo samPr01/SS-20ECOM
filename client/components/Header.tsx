@@ -35,7 +35,7 @@ export default function Header() {
             {/* Logo */}
             <Link to="/" className="flex items-center">
               <span className="text-xl font-bold text-purple-600">
-                SamaySagar
+                SS Stores
               </span>
             </Link>
 
@@ -110,7 +110,7 @@ export default function Header() {
             {/* Logo */}
             <Link to="/" className="flex items-center">
               <span className="text-2xl font-bold text-purple-600">
-                SamaySagar
+                SS Stores
               </span>
             </Link>
 
