@@ -2,8 +2,15 @@ import CategoryPage from "@/components/CategoryPage";
 import { allProducts } from "@/data/allProducts";
 
 const subcategories = [
-  "Skincare", "Makeup", "Hair Care", "Fragrances", "Personal Care", 
-  "Beauty Tools", "Wellness", "Supplements", "Oral Care"
+  "Skincare",
+  "Makeup",
+  "Hair Care",
+  "Fragrances",
+  "Personal Care",
+  "Beauty Tools",
+  "Wellness",
+  "Supplements",
+  "Oral Care",
 ];
 
 export default function BeautyHealth() {

@@ -2,8 +2,16 @@ import CategoryPage from "@/components/CategoryPage";
 import { allProducts } from "@/data/allProducts";
 
 const subcategories = [
-  "Office Furniture", "Computer Accessories", "Stationery", "Printers & Scanners", "Storage", 
-  "Desk Accessories", "Office Electronics", "Lighting", "Office Supplies", "Conference Room"
+  "Office Furniture",
+  "Computer Accessories",
+  "Stationery",
+  "Printers & Scanners",
+  "Storage",
+  "Desk Accessories",
+  "Office Electronics",
+  "Lighting",
+  "Office Supplies",
+  "Conference Room",
 ];
 
 export default function Office() {

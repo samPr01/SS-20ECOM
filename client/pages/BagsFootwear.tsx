@@ -2,8 +2,16 @@ import CategoryPage from "@/components/CategoryPage";
 import { allProducts } from "@/data/allProducts";
 
 const subcategories = [
-  "Running Shoes", "Casual Shoes", "Formal Shoes", "Sandals", "Handbags", 
-  "Backpacks", "Wallets", "Travel Bags", "Sports Shoes", "Office Bags"
+  "Running Shoes",
+  "Casual Shoes",
+  "Formal Shoes",
+  "Sandals",
+  "Handbags",
+  "Backpacks",
+  "Wallets",
+  "Travel Bags",
+  "Sports Shoes",
+  "Office Bags",
 ];
 
 export default function BagsFootwear() {

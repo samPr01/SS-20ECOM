@@ -2,8 +2,14 @@ import CategoryPage from "@/components/CategoryPage";
 import { allProducts } from "@/data/allProducts";
 
 const subcategories = [
-  "T-Shirts & Polos", "Shirts", "Jeans & Trousers", "Ethnic Wear", 
-  "Shorts", "Hoodies & Sweatshirts", "Blazers & Suits", "Sportswear"
+  "T-Shirts & Polos",
+  "Shirts",
+  "Jeans & Trousers",
+  "Ethnic Wear",
+  "Shorts",
+  "Hoodies & Sweatshirts",
+  "Blazers & Suits",
+  "Sportswear",
 ];
 
 export default function Men() {

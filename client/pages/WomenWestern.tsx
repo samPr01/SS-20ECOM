@@ -2,8 +2,15 @@ import CategoryPage from "@/components/CategoryPage";
 import { allProducts } from "@/data/allProducts";
 
 const subcategories = [
-  "Dresses", "Tops & Tunics", "Jeans & Trousers", "Skirts", 
-  "Jumpsuits", "Blazers", "Shirts", "Shorts", "Co-ord Sets"
+  "Dresses",
+  "Tops & Tunics",
+  "Jeans & Trousers",
+  "Skirts",
+  "Jumpsuits",
+  "Blazers",
+  "Shirts",
+  "Shorts",
+  "Co-ord Sets",
 ];
 
 export default function WomenWestern() {

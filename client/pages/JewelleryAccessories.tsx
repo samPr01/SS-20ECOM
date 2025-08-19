@@ -2,8 +2,16 @@ import CategoryPage from "@/components/CategoryPage";
 import { allProducts } from "@/data/allProducts";
 
 const subcategories = [
-  "Necklaces", "Earrings", "Rings", "Bracelets", "Watches", 
-  "Handbags", "Sunglasses", "Hair Accessories", "Bangles", "Men's Jewellery"
+  "Necklaces",
+  "Earrings",
+  "Rings",
+  "Bracelets",
+  "Watches",
+  "Handbags",
+  "Sunglasses",
+  "Hair Accessories",
+  "Bangles",
+  "Men's Jewellery",
 ];
 
 export default function JewelleryAccessories() {

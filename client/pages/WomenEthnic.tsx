@@ -3,7 +3,7 @@ import { allProducts } from "@/data/allProducts";
 
 const subcategories = [
   "Sarees",
-  "Kurtis & Suits", 
+  "Kurtis & Suits",
   "Lehengas",
   "Anarkali Dresses",
   "Palazzo Sets",

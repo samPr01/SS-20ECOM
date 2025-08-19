@@ -2,8 +2,14 @@ import CategoryPage from "@/components/CategoryPage";
 import { allProducts } from "@/data/allProducts";
 
 const subcategories = [
-  "Baby Clothing", "Boys Clothing", "Girls Clothing", "Toys & Games", 
-  "School Supplies", "Footwear", "Baby Care", "Books & Learning"
+  "Baby Clothing",
+  "Boys Clothing",
+  "Girls Clothing",
+  "Toys & Games",
+  "School Supplies",
+  "Footwear",
+  "Baby Care",
+  "Books & Learning",
 ];
 
 export default function Kids() {

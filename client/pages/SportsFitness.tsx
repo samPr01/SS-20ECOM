@@ -2,8 +2,16 @@ import CategoryPage from "@/components/CategoryPage";
 import { allProducts } from "@/data/allProducts";
 
 const subcategories = [
-  "Gym Equipment", "Yoga & Fitness", "Cricket", "Football", "Badminton", 
-  "Swimming", "Running", "Cycling", "Outdoor Sports", "Fitness Accessories"
+  "Gym Equipment",
+  "Yoga & Fitness",
+  "Cricket",
+  "Football",
+  "Badminton",
+  "Swimming",
+  "Running",
+  "Cycling",
+  "Outdoor Sports",
+  "Fitness Accessories",
 ];
 
 export default function SportsFitness() {

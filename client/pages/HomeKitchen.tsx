@@ -2,8 +2,15 @@ import CategoryPage from "@/components/CategoryPage";
 import { allProducts } from "@/data/allProducts";
 
 const subcategories = [
-  "Cookware", "Home Decor", "Storage", "Lighting", "Bedding", 
-  "Kitchen Appliances", "Dining", "Furniture", "Cleaning Supplies"
+  "Cookware",
+  "Home Decor",
+  "Storage",
+  "Lighting",
+  "Bedding",
+  "Kitchen Appliances",
+  "Dining",
+  "Furniture",
+  "Cleaning Supplies",
 ];
 
 export default function HomeKitchen() {

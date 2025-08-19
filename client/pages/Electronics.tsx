@@ -2,8 +2,15 @@ import CategoryPage from "@/components/CategoryPage";
 import { allProducts } from "@/data/allProducts";
 
 const subcategories = [
-  "Mobile Accessories", "Audio & Headphones", "Computers & Laptops", "Smart Watches", 
-  "Gaming", "Cameras", "Home Electronics", "Cables & Chargers", "Storage Devices"
+  "Mobile Accessories",
+  "Audio & Headphones",
+  "Computers & Laptops",
+  "Smart Watches",
+  "Gaming",
+  "Cameras",
+  "Home Electronics",
+  "Cables & Chargers",
+  "Storage Devices",
 ];
 
 export default function Electronics() {

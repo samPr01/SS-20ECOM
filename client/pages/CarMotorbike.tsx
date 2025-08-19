@@ -2,8 +2,16 @@ import CategoryPage from "@/components/CategoryPage";
 import { allProducts } from "@/data/allProducts";
 
 const subcategories = [
-  "Car Electronics", "Car Accessories", "Motorcycle Gear", "Safety Equipment", "Car Care", 
-  "Bike Accessories", "Car Audio", "Navigation", "Tools & Equipment", "Car Covers"
+  "Car Electronics",
+  "Car Accessories",
+  "Motorcycle Gear",
+  "Safety Equipment",
+  "Car Care",
+  "Bike Accessories",
+  "Car Audio",
+  "Navigation",
+  "Tools & Equipment",
+  "Car Covers",
 ];
 
 export default function CarMotorbike() {
