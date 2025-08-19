@@ -12,6 +12,7 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BottomNavigation from "@/components/BottomNavigation";
+import { homePageProducts } from "@/data/allProducts";
 
 // Mobile categories (circular) - matching all desktop categories
 const mobileCategories = [
@@ -147,49 +148,8 @@ const desktopCategories = [
   },
 ];
 
-// Mock data for trending products
-const trendingProducts = [
-  {
-    id: 1,
-    name: "Wireless Bluetooth Headphones",
-    price: 2999,
-    originalPrice: 4999,
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop",
-    rating: 4.5,
-    reviews: 128,
-  },
-  {
-    id: 2,
-    name: "Cotton Casual T-Shirt",
-    price: 599,
-    originalPrice: 999,
-    image:
-      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop",
-    rating: 4.2,
-    reviews: 89,
-  },
-  {
-    id: 3,
-    name: "Smart Fitness Watch",
-    price: 8999,
-    originalPrice: 12999,
-    image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop",
-    rating: 4.7,
-    reviews: 245,
-  },
-  {
-    id: 4,
-    name: "Ceramic Coffee Mug Set",
-    price: 1299,
-    originalPrice: 1899,
-    image:
-      "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?w=300&h=300&fit=crop",
-    rating: 4.3,
-    reviews: 67,
-  },
-];
+// Use imported products for home page
+const trendingProducts = homePageProducts;
 
 export default function Index() {
   return (
