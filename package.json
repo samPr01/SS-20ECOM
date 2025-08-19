@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run build:client && npm run build:server",
-    "build:client": "vite build --mode production",
+    "build:client": "vite build --config vite.config.client.ts --mode production",
     "build:server": "vite build --config vite.config.server.ts",
     "build:netlify": "node scripts/build-optimize.js",
     "start": "node dist/server/node-build.mjs",

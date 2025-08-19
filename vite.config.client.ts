@@ -1,4 +1,4 @@
-import { defineConfig, Plugin } from "vite";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
@@ -29,13 +29,7 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1000,
     assetsInlineLimit: 4096,
   },
-  plugins: [
-    react(), 
-    mode === "serve" ? (async () => {
-      const { createServer } = await import("./server");
-      return expressPlugin(createServer);
-    })() : null
-  ].filter(Boolean),
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),
@@ -49,16 +43,3 @@ export default defineConfig(({ mode }) => ({
     __DEV__: mode === "development",
   },
 }));
-
-function expressPlugin(createServer: () => any): Plugin {
-  return {
-    name: "express-plugin",
-    apply: "serve", // Only apply during development (serve mode)
-    configureServer(server) {
-      const app = createServer();
-
-      // Add Express app as middleware to Vite dev server
-      server.middlewares.use(app);
-    },
-  };
-}
