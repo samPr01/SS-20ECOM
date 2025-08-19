@@ -13,6 +13,8 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BottomNavigation from "@/components/BottomNavigation";
+import { useCart } from "@/hooks/useCart.tsx";
+import { useToast } from "@/hooks/use-toast";
 
 interface Product {
   id: number;
@@ -40,6 +42,8 @@ export default function CategoryPage({
   products,
   subcategories,
 }: CategoryPageProps) {
+  const { addToCart } = useCart();
+  const { toast } = useToast();
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
       <Header />
@@ -195,7 +199,19 @@ export default function CategoryPage({
                       </div>
                     </div>
 
-                    <Button className="w-full" size="sm">
+                    <Button 
+                      className="w-full" 
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        addToCart(product);
+                        toast({
+                          title: "Added to cart",
+                          description: `${product.name} has been added to your cart.`,
+                        });
+                      }}
+                    >
                       <ShoppingCart className="w-4 h-4 mr-2" />
                       <span className="hidden md:inline">Add to Cart</span>
                       <span className="md:hidden">Add</span>

@@ -23,5 +23,20 @@ dist-ssr
 *.sln
 *.sw?
 
-.config/
-!.env
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database
+*.db
+*.db-journal
+
+# Build artifacts
+.netlify
+.vercel
+
+# Bundle analyzer
+stats.html

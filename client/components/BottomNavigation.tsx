@@ -9,7 +9,6 @@ export default function BottomNavigation() {
     { icon: Grid3X3, label: "Categories", path: "/categories" },
     { icon: Mail, label: "Mall", path: "/mall" },
     { icon: HelpCircle, label: "Help", path: "/help" },
-    { icon: User, label: "Account", path: "/account" },
   ];
 
   return (

@@ -1,0 +1,252 @@
+[
+  {
+    "id": 1,
+    "name": "Wireless Bluetooth Headphones",
+    "description": "High-quality wireless headphones with noise cancellation and 30-hour battery life. Perfect for music lovers and professionals.",
+    "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+    "price": 129.99,
+    "category": "electronics",
+    "rating": 4.5,
+    "discount": 15
+  },
+  {
+    "id": 2,
+    "name": "Organic Cotton T-Shirt",
+    "description": "Comfortable and sustainable cotton t-shirt made from 100% organic materials. Available in multiple colors and sizes.",
+    "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop",
+    "price": 24.99,
+    "category": "clothing",
+    "rating": 4.2,
+    "discount": 0
+  },
+  {
+    "id": 3,
+    "name": "Smart Fitness Watch",
+    "description": "Advanced fitness tracking watch with heart rate monitor, GPS, and smartphone connectivity. Track your workouts and health metrics.",
+    "image": "https://images.unsplash.com/photo-1544117519-31a4b719223d?w=400&h=400&fit=crop",
+    "price": 199.99,
+    "category": "electronics",
+    "rating": 4.7,
+    "discount": 25
+  },
+  {
+    "id": 4,
+    "name": "Stainless Steel Water Bottle",
+    "description": "Eco-friendly insulated water bottle that keeps drinks cold for 24 hours or hot for 12 hours. Perfect for outdoor activities.",
+    "image": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&h=400&fit=crop",
+    "price": 34.99,
+    "category": "home",
+    "rating": 4.4,
+    "discount": 10
+  },
+  {
+    "id": 5,
+    "name": "Leather Crossbody Bag",
+    "description": "Stylish and practical leather crossbody bag with multiple compartments. Perfect for everyday use and travel.",
+    "image": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop",
+    "price": 89.99,
+    "category": "accessories",
+    "rating": 4.3,
+    "discount": 20
+  },
+  {
+    "id": 6,
+    "name": "Wireless Charging Pad",
+    "description": "Fast wireless charging pad compatible with all Qi-enabled devices. Sleek design with LED indicator lights.",
+    "image": "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400&h=400&fit=crop",
+    "price": 49.99,
+    "category": "electronics",
+    "rating": 4.1,
+    "discount": 0
+  },
+  {
+    "id": 7,
+    "name": "Yoga Mat Premium",
+    "description": "Non-slip yoga mat made from eco-friendly materials. Perfect thickness for comfort and stability during practice.",
+    "image": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=400&fit=crop",
+    "price": 39.99,
+    "category": "fitness",
+    "rating": 4.6,
+    "discount": 15
+  },
+  {
+    "id": 8,
+    "name": "Ceramic Coffee Mug Set",
+    "description": "Set of 4 beautiful ceramic coffee mugs with modern design. Microwave and dishwasher safe.",
+    "image": "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400&h=400&fit=crop",
+    "price": 29.99,
+    "category": "home",
+    "rating": 4.0,
+    "discount": 0
+  },
+  {
+    "id": 9,
+    "name": "Denim Jacket Classic",
+    "description": "Timeless denim jacket with comfortable fit and durable construction. Perfect for layering in any season.",
+    "image": "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=400&h=400&fit=crop",
+    "price": 79.99,
+    "category": "clothing",
+    "rating": 4.4,
+    "discount": 30
+  },
+  {
+    "id": 10,
+    "name": "Portable Bluetooth Speaker",
+    "description": "Waterproof portable speaker with 360-degree sound and 20-hour battery life. Perfect for outdoor adventures.",
+    "image": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop",
+    "price": 69.99,
+    "category": "electronics",
+    "rating": 4.3,
+    "discount": 0
+  },
+  {
+    "id": 11,
+    "name": "Organic Face Cream",
+    "description": "Natural face cream with hyaluronic acid and vitamin E. Suitable for all skin types and free from harmful chemicals.",
+    "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=400&fit=crop",
+    "price": 44.99,
+    "category": "beauty",
+    "rating": 4.5,
+    "discount": 10
+  },
+  {
+    "id": 12,
+    "name": "Running Shoes Lightweight",
+    "description": "Lightweight running shoes with superior cushioning and breathable mesh upper. Perfect for daily runs and training.",
+    "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
+    "price": 119.99,
+    "category": "fitness",
+    "rating": 4.7,
+    "discount": 25
+  },
+  {
+    "id": 13,
+    "name": "Smart Home Security Camera",
+    "description": "1080p security camera with night vision and motion detection. Connects to your smartphone for remote monitoring.",
+    "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
+    "price": 89.99,
+    "category": "electronics",
+    "rating": 4.2,
+    "discount": 0
+  },
+  {
+    "id": 14,
+    "name": "Bamboo Cutting Board Set",
+    "description": "Set of 3 bamboo cutting boards in different sizes. Eco-friendly and knife-friendly surface.",
+    "image": "https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=400&h=400&fit=crop",
+    "price": 34.99,
+    "category": "home",
+    "rating": 4.4,
+    "discount": 15
+  },
+  {
+    "id": 15,
+    "name": "Sunglasses Polarized",
+    "description": "Polarized sunglasses with UV400 protection and lightweight frame. Classic design for everyday wear.",
+    "image": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=400&fit=crop",
+    "price": 59.99,
+    "category": "accessories",
+    "rating": 4.1,
+    "discount": 20
+  },
+  {
+    "id": 16,
+    "name": "Electric Toothbrush Sonic",
+    "description": "Sonic electric toothbrush with 3 cleaning modes and 2-minute timer. Includes travel case and replacement heads.",
+    "image": "https://images.unsplash.com/photo-1559591935-c6c92c6c2c8a?w=400&h=400&fit=crop",
+    "price": 79.99,
+    "category": "beauty",
+    "rating": 4.6,
+    "discount": 0
+  },
+  {
+    "id": 17,
+    "name": "Laptop Stand Adjustable",
+    "description": "Adjustable laptop stand with ergonomic design. Improves posture and provides better airflow for your device.",
+    "image": "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400&h=400&fit=crop",
+    "price": 49.99,
+    "category": "electronics",
+    "rating": 4.3,
+    "discount": 10
+  },
+  {
+    "id": 18,
+    "name": "Organic Tea Collection",
+    "description": "Assorted collection of organic teas including green, black, and herbal varieties. 50 tea bags total.",
+    "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop",
+    "price": 19.99,
+    "category": "food",
+    "rating": 4.2,
+    "discount": 0
+  },
+  {
+    "id": 19,
+    "name": "Resistance Band Set",
+    "description": "Set of 5 resistance bands with different resistance levels. Perfect for home workouts and strength training.",
+    "image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop",
+    "price": 24.99,
+    "category": "fitness",
+    "rating": 4.4,
+    "discount": 15
+  },
+  {
+    "id": 20,
+    "name": "Aromatherapy Diffuser",
+    "description": "Ultrasonic aromatherapy diffuser with LED mood lighting. Perfect for creating a relaxing atmosphere.",
+    "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop",
+    "price": 39.99,
+    "category": "home",
+    "rating": 4.1,
+    "discount": 0
+  },
+  {
+    "id": 21,
+    "name": "Wireless Gaming Mouse",
+    "description": "High-performance wireless gaming mouse with customizable RGB lighting and 25K DPI sensor.",
+    "image": "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=400&fit=crop",
+    "price": 89.99,
+    "category": "electronics",
+    "rating": 4.5,
+    "discount": 20
+  },
+  {
+    "id": 22,
+    "name": "Silk Pillowcase Set",
+    "description": "Set of 2 silk pillowcases that protect hair and skin while you sleep. Hypoallergenic and gentle on skin.",
+    "image": "https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=400&h=400&fit=crop",
+    "price": 54.99,
+    "category": "home",
+    "rating": 4.3,
+    "discount": 10
+  },
+  {
+    "id": 23,
+    "name": "Protein Powder Vanilla",
+    "description": "Premium whey protein powder with 24g protein per serving. Great for post-workout recovery and muscle building.",
+    "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop",
+    "price": 44.99,
+    "category": "fitness",
+    "rating": 4.6,
+    "discount": 0
+  },
+  {
+    "id": 24,
+    "name": "Smart LED Light Bulbs",
+    "description": "Set of 4 smart LED bulbs with voice control and 16 million colors. Compatible with Alexa and Google Home.",
+    "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
+    "price": 69.99,
+    "category": "electronics",
+    "rating": 4.2,
+    "discount": 25
+  },
+  {
+    "id": 25,
+    "name": "Organic Face Mask Set",
+    "description": "Set of 5 organic face masks with different ingredients for various skin concerns. Cruelty-free and vegan.",
+    "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=400&fit=crop",
+    "price": 29.99,
+    "category": "beauty",
+    "rating": 4.4,
+    "discount": 15
+  }
+]

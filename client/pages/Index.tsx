@@ -1,10 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import {
-  ShoppingCart,
-  Star,
   ArrowRight,
   SlidersHorizontal,
   ArrowUpDown,
@@ -12,7 +8,7 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BottomNavigation from "@/components/BottomNavigation";
-import { homePageProducts } from "@/data/allProducts";
+import ProductGrid from "@/components/ProductGrid";
 
 // Mobile categories (circular) - matching all desktop categories
 const mobileCategories = [
@@ -148,8 +144,7 @@ const desktopCategories = [
   },
 ];
 
-// Use imported products for home page
-const trendingProducts = homePageProducts;
+// Removed homePageProducts reference - now using ProductGrid component
 
 export default function Index() {
   return (
@@ -322,73 +317,11 @@ export default function Index() {
             </div>
 
             {/* Product Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6">
-              {homePageProducts.map((product) => (
-                <Card
-                  key={product.id}
-                  className="overflow-hidden hover:shadow-lg transition-shadow duration-300 group"
-                >
-                  <div className="aspect-square overflow-hidden relative">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <Badge className="absolute top-2 left-2 bg-red-500 text-white text-xs">
-                      {Math.round(
-                        ((product.originalPrice - product.price) /
-                          product.originalPrice) *
-                          100,
-                      )}
-                      % OFF
-                    </Badge>
-                  </div>
-
-                  <CardContent className="p-3 md:p-4">
-                    <Link to={`/product/${product.id}`}>
-                      <h3 className="font-medium text-gray-900 mb-2 hover:text-purple-600 transition-colors line-clamp-2 text-sm md:text-base">
-                        {product.name}
-                      </h3>
-                    </Link>
-
-                    <div className="flex items-center mb-2 md:hidden">
-                      <div className="flex items-center">
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        <span className="text-xs text-gray-600 ml-1">
-                          {product.rating}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="hidden md:flex items-center mb-2">
-                      <div className="flex items-center">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm text-gray-600 ml-1">
-                          {product.rating} ({product.reviews})
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm md:text-lg font-bold text-gray-900">
-                          ₹{product.price.toLocaleString()}
-                        </span>
-                        <span className="text-xs md:text-sm text-gray-500 line-through">
-                          ₹{product.originalPrice.toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-
-                    <Button className="w-full" size="sm">
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      <span className="hidden md:inline">Add to Cart</span>
-                      <span className="md:hidden">Add</span>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <ProductGrid 
+              title="Products For You" 
+              showPagination={false} 
+              productsPerPage={20}
+            />
           </div>
         </section>
       </main>

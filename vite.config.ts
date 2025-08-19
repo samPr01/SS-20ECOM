@@ -15,13 +15,36 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist/spa",
+    sourcemap: mode === "development",
+    minify: "esbuild",
+    target: "es2020",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['lucide-react', '@radix-ui/react-tabs', '@radix-ui/react-label'],
+          utils: ['@tanstack/react-query'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+    assetsInlineLimit: 4096,
   },
-  plugins: [react(), expressPlugin()],
+  plugins: [
+    react(), 
+    mode === "serve" ? expressPlugin() : null
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),
       "@shared": path.resolve(__dirname, "./shared"),
     },
+  },
+  esbuild: {
+    drop: mode === "production" ? ["console", "debugger"] : [],
+  },
+  define: {
+    __DEV__: mode === "development",
   },
 }));
 

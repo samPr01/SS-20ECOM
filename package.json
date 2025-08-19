@@ -13,16 +13,23 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run build:client && npm run build:server",
-    "build:client": "vite build",
+    "build:client": "vite build --mode production",
     "build:server": "vite build --config vite.config.server.ts",
+    "build:netlify": "node scripts/build-optimize.js",
     "start": "node dist/server/node-build.mjs",
     "test": "vitest --run",
     "format.fix": "prettier --write .",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "analyze": "npx vite-bundle-analyzer dist/spa",
+    "preview": "vite preview"
   },
   "dependencies": {
+    "@prisma/client": "^6.14.0",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "prisma": "^6.14.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
