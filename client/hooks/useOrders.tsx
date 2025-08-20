@@ -1,8 +1,6 @@
 import { createContext, useContext, useReducer, useEffect, ReactNode } from "react";
 import { getAuthHeaders } from './useAuth';
-
-// API base URL - adjust this to match your backend URL
-const API_BASE_URL = 'http://localhost:5000/api';
+import { API_BASE_URL } from '../src/config/api';
 
 export interface OrderItem {
   id: string;

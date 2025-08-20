@@ -96,3 +96,6 @@ temp/
 ehthumbs.db
 Thumbs.db
 
+# Uploads directory
+uploads/
+

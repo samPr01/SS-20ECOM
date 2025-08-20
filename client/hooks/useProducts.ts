@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Product, loadProducts, getProductsByCategory, getProductsWithPagination, getProductById } from '@/data/allProducts';
-
-// API base URL - adjust this to match your backend URL
-const API_BASE_URL = 'http://localhost:5000/api';
+import { Product } from '@/data/allProducts';
+import { useAuthApi } from './useAuthApi';
 
 // Backend Product interface (matches the backend schema)
 interface BackendProduct {
@@ -48,6 +46,7 @@ export function useProducts(category?: string) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const api = useAuthApi();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -55,46 +54,26 @@ export function useProducts(category?: string) {
       setError(null);
       
       try {
-        // Try to fetch from API first
+        // Build query parameters
         const params = new URLSearchParams();
         if (category) {
           params.append('category', category);
         }
         params.append('limit', '100'); // Get more products
 
-        const response = await fetch(`${API_BASE_URL}/products?${params}`);
-        
-        if (response.ok) {
-          const data: ProductsResponse = await response.json();
-          const convertedProducts = data.products.map(convertBackendProduct);
-          setProducts(convertedProducts);
-        } else {
-          throw new Error('API request failed');
-        }
+        const data: ProductsResponse = await api.get(`/products?${params}`);
+        const convertedProducts = data.products.map(convertBackendProduct);
+        setProducts(convertedProducts);
       } catch (err) {
-        console.warn('API failed, falling back to local data:', err);
-        
-        // Fallback to local data
-        try {
-          const allProducts = await loadProducts();
-          let filteredProducts = allProducts;
-          
-          if (category) {
-            filteredProducts = getProductsByCategory(allProducts, category);
-          }
-          
-          setProducts(filteredProducts);
-        } catch (fallbackErr) {
-          setError('Failed to load products');
-          console.error('Error loading products:', fallbackErr);
-        }
+        console.error('Error loading products:', err);
+        setError('Failed to load products');
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, [category]);
+  }, [category, api]);
 
   return { products, loading, error };
 }
@@ -103,6 +82,7 @@ export function useProduct(id: string) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const api = useAuthApi();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -110,33 +90,12 @@ export function useProduct(id: string) {
       setError(null);
       
       try {
-        // Try to fetch from API first
-        const response = await fetch(`${API_BASE_URL}/products/${id}`);
-        
-        if (response.ok) {
-          const data = await response.json();
-          const convertedProduct = convertBackendProduct(data.product);
-          setProduct(convertedProduct);
-        } else if (response.status === 404) {
-          throw new Error('Product not found');
-        } else {
-          throw new Error('API request failed');
-        }
+        const data = await api.get(`/products/${id}`);
+        const convertedProduct = convertBackendProduct(data.product);
+        setProduct(convertedProduct);
       } catch (err) {
-        console.warn('API failed, falling back to local data:', err);
-        
-        // Fallback to local data
-        try {
-          const foundProduct = await getProductById(id);
-          if (foundProduct) {
-            setProduct(foundProduct);
-          } else {
-            setError('Product not found');
-          }
-        } catch (fallbackErr) {
-          setError('Failed to load product');
-          console.error('Error loading product:', fallbackErr);
-        }
+        console.error('Error loading product:', err);
+        setError('Failed to load product');
       } finally {
         setLoading(false);
       }
@@ -145,7 +104,7 @@ export function useProduct(id: string) {
     if (id) {
       fetchProduct();
     }
-  }, [id]);
+  }, [id, api]);
 
   return { product, loading, error };
 }
@@ -165,6 +124,7 @@ export function useProductsWithPagination(
     hasNextPage: false,
     hasPrevPage: false,
   });
+  const api = useAuthApi();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -172,7 +132,7 @@ export function useProductsWithPagination(
       setError(null);
       
       try {
-        // Try to fetch from API first
+        // Build query parameters
         const params = new URLSearchParams();
         if (category) {
           params.append('category', category);
@@ -180,60 +140,27 @@ export function useProductsWithPagination(
         params.append('page', page.toString());
         params.append('limit', limit.toString());
 
-        const response = await fetch(`${API_BASE_URL}/products?${params}`);
+        const data: ProductsResponse = await api.get(`/products?${params}`);
+        const convertedProducts = data.products.map(convertBackendProduct);
         
-        if (response.ok) {
-          const data: ProductsResponse = await response.json();
-          const convertedProducts = data.products.map(convertBackendProduct);
-          
-          setProducts(convertedProducts);
-          setPagination({
-            currentPage: data.pagination.currentPage,
-            totalPages: data.pagination.totalPages,
-            totalProducts: data.pagination.totalProducts,
-            hasNextPage: data.pagination.hasNextPage,
-            hasPrevPage: data.pagination.hasPrevPage,
-          });
-        } else {
-          throw new Error('API request failed');
-        }
+        setProducts(convertedProducts);
+        setPagination({
+          currentPage: data.pagination.currentPage,
+          totalPages: data.pagination.totalPages,
+          totalProducts: data.pagination.totalProducts,
+          hasNextPage: data.pagination.hasNextPage,
+          hasPrevPage: data.pagination.hasPrevPage,
+        });
       } catch (err) {
-        console.warn('API failed, falling back to local data:', err);
-        
-        // Fallback to local data
-        try {
-          const allProducts = await loadProducts();
-          let filteredProducts = allProducts;
-          
-          if (category) {
-            filteredProducts = getProductsByCategory(allProducts, category);
-          }
-          
-          const paginationResult = getProductsWithPagination(
-            filteredProducts, 
-            page, 
-            limit
-          );
-          
-          setProducts(paginationResult.products);
-          setPagination({
-            currentPage: paginationResult.currentPage,
-            totalPages: paginationResult.totalPages,
-            totalProducts: paginationResult.totalProducts,
-            hasNextPage: page < paginationResult.totalPages,
-            hasPrevPage: page > 1,
-          });
-        } catch (fallbackErr) {
-          setError('Failed to load products');
-          console.error('Error loading products:', fallbackErr);
-        }
+        console.error('Error loading products:', err);
+        setError('Failed to load products');
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, [category, page, limit]);
+  }, [category, page, limit, api]);
 
   const setPage = (newPage: number) => {
     setPagination(prev => ({ ...prev, currentPage: newPage }));
@@ -253,6 +180,7 @@ export function useProductSearch(searchTerm: string) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const api = useAuthApi();
 
   useEffect(() => {
     const searchProducts = async () => {
@@ -265,37 +193,17 @@ export function useProductSearch(searchTerm: string) {
       setError(null);
       
       try {
-        // Try to fetch from API first
+        // Build query parameters
         const params = new URLSearchParams();
         params.append('search', searchTerm);
         params.append('limit', '50');
 
-        const response = await fetch(`${API_BASE_URL}/products?${params}`);
-        
-        if (response.ok) {
-          const data: ProductsResponse = await response.json();
-          const convertedProducts = data.products.map(convertBackendProduct);
-          setProducts(convertedProducts);
-        } else {
-          throw new Error('API request failed');
-        }
+        const data: ProductsResponse = await api.get(`/products?${params}`);
+        const convertedProducts = data.products.map(convertBackendProduct);
+        setProducts(convertedProducts);
       } catch (err) {
-        console.warn('API failed, falling back to local data:', err);
-        
-        // Fallback to local data with simple search
-        try {
-          const allProducts = await loadProducts();
-          const searchLower = searchTerm.toLowerCase();
-          const filteredProducts = allProducts.filter(product =>
-            product.name.toLowerCase().includes(searchLower) ||
-            product.description.toLowerCase().includes(searchLower) ||
-            product.category.toLowerCase().includes(searchLower)
-          );
-          setProducts(filteredProducts);
-        } catch (fallbackErr) {
-          setError('Failed to search products');
-          console.error('Error searching products:', fallbackErr);
-        }
+        console.error('Error searching products:', err);
+        setError('Failed to search products');
       } finally {
         setLoading(false);
       }
@@ -304,7 +212,7 @@ export function useProductSearch(searchTerm: string) {
     // Debounce search
     const timeoutId = setTimeout(searchProducts, 300);
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+  }, [searchTerm, api]);
 
   return { products, loading, error };
 }

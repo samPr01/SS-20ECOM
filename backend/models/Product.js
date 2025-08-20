@@ -1,15 +1,16 @@
 import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
-  name: {
+  title: {
     type: String,
-    required: [true, 'Product name is required'],
+    required: [true, 'Product title is required'],
     trim: true,
-    maxlength: [100, 'Product name cannot exceed 100 characters']
+    maxlength: [200, 'Title cannot exceed 200 characters']
   },
   description: {
     type: String,
     required: [true, 'Product description is required'],
+    trim: true,
     maxlength: [1000, 'Description cannot exceed 1000 characters']
   },
   price: {
@@ -17,21 +18,22 @@ const productSchema = new mongoose.Schema({
     required: [true, 'Product price is required'],
     min: [0, 'Price cannot be negative']
   },
-  category: {
-    type: String,
-    required: [true, 'Product category is required'],
-    enum: ['electronics', 'clothing', 'books', 'home', 'sports', 'other'],
-    default: 'other'
-  },
   image: {
     type: String,
     required: [true, 'Product image URL is required'],
-    validate: {
-      validator: function(v) {
-        return /^https?:\/\/.+/.test(v);
-      },
-      message: 'Please provide a valid image URL'
-    }
+    trim: true
+  },
+  sku: {
+    type: String,
+    required: [true, 'Product SKU is required'],
+    unique: true,
+    trim: true,
+    uppercase: true
+  },
+  category: {
+    type: String,
+    default: 'general',
+    trim: true
   },
   stock: {
     type: Number,
@@ -46,8 +48,14 @@ const productSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for better search performance
-productSchema.index({ name: 'text', description: 'text' });
+// Create index on SKU for faster lookups
+productSchema.index({ sku: 1 });
+
+// Create index on category for filtering
+productSchema.index({ category: 1 });
+
+// Create index on isActive for filtering active products
+productSchema.index({ isActive: 1 });
 
 const Product = mongoose.model('Product', productSchema);
 

@@ -1,7 +1,6 @@
 import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { Product } from '@/data/allProducts';
 import { useAuthApi } from './useAuthApi';
-import { API_BASE_URL } from '../src/config/api';
 
 // Cart item interface
 export interface CartItem {
@@ -207,36 +206,21 @@ const CartContext = createContext<{
 // Cart provider
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+  const api = useAuthApi();
 
   // Fetch cart from API
   const fetchCart = async () => {
-    const token = localStorage.getItem('jwt_token');
-    if (!token) {
-      dispatch({ type: 'SET_CART_ITEMS', payload: [] });
-      return;
-    }
-
     dispatch({ type: 'SET_LOADING', payload: true });
     dispatch({ type: 'SET_ERROR', payload: null });
 
     try {
-      const response = await fetch(`${API_BASE_URL}/cart`, {
-        headers: getAuthHeaders(),
-      });
-
-      if (response.ok) {
-        const data: BackendCartResponse = await response.json();
-        const convertedItems = data.cart.items.map(convertBackendCartItem);
-        dispatch({ type: 'SET_CART_ITEMS', payload: convertedItems });
-      } else if (response.status === 401) {
-        // User not authenticated, clear cart
-        dispatch({ type: 'SET_CART_ITEMS', payload: [] });
-      } else {
-        throw new Error('Failed to fetch cart');
-      }
+      const data: BackendCartResponse = await api.get('/cart');
+      const convertedItems = data.cart.items.map(convertBackendCartItem);
+      dispatch({ type: 'SET_CART_ITEMS', payload: convertedItems });
     } catch (error) {
       console.error('Error fetching cart:', error);
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to load cart' });
+      // If 401, user is not authenticated, clear cart
+      dispatch({ type: 'SET_CART_ITEMS', payload: [] });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -249,107 +233,49 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // API helper functions
   const addToCart = async (product: Product): Promise<{ success: boolean; error?: string }> => {
-    const token = localStorage.getItem('jwt_token');
-    if (!token) {
-      return { success: false, error: 'Please login to add items to cart' };
-    }
-
     try {
-      const response = await fetch(`${API_BASE_URL}/cart`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({
-          productId: product.id.toString(),
-          quantity: 1,
-        }),
+      await api.post('/cart', {
+        productId: product.id, // Use the actual product ID
+        quantity: 1,
       });
-
-      if (response.ok) {
-        await fetchCart(); // Refresh cart data
-        return { success: true };
-      } else {
-        const data = await response.json();
-        return { success: false, error: data.message || 'Failed to add item to cart' };
-      }
+      await fetchCart(); // Refresh cart data
+      return { success: true };
     } catch (error) {
       console.error('Error adding to cart:', error);
-      return { success: false, error: 'Network error. Please try again.' };
+      return { success: false, error: 'Failed to add item to cart' };
     }
   };
 
   const removeFromCart = async (id: string): Promise<{ success: boolean; error?: string }> => {
-    const token = localStorage.getItem('jwt_token');
-    if (!token) {
-      return { success: false, error: 'Please login to remove items from cart' };
-    }
-
     try {
-      const response = await fetch(`${API_BASE_URL}/cart/${id}`, {
-        method: 'DELETE',
-        headers: getAuthHeaders(),
-      });
-
-      if (response.ok) {
-        await fetchCart(); // Refresh cart data
-        return { success: true };
-      } else {
-        const data = await response.json();
-        return { success: false, error: data.message || 'Failed to remove item from cart' };
-      }
+      await api.delete(`/cart/${id}`);
+      await fetchCart(); // Refresh cart data
+      return { success: true };
     } catch (error) {
       console.error('Error removing from cart:', error);
-      return { success: false, error: 'Network error. Please try again.' };
+      return { success: false, error: 'Failed to remove item from cart' };
     }
   };
 
   const updateQuantity = async (id: string, quantity: number): Promise<{ success: boolean; error?: string }> => {
-    const token = localStorage.getItem('jwt_token');
-    if (!token) {
-      return { success: false, error: 'Please login to update cart' };
-    }
-
     try {
-      const response = await fetch(`${API_BASE_URL}/cart/${id}`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ quantity }),
-      });
-
-      if (response.ok) {
-        await fetchCart(); // Refresh cart data
-        return { success: true };
-      } else {
-        const data = await response.json();
-        return { success: false, error: data.message || 'Failed to update quantity' };
-      }
+      await api.put(`/cart/${id}`, { quantity });
+      await fetchCart(); // Refresh cart data
+      return { success: true };
     } catch (error) {
       console.error('Error updating quantity:', error);
-      return { success: false, error: 'Network error. Please try again.' };
+      return { success: false, error: 'Failed to update quantity' };
     }
   };
 
   const clearCart = async (): Promise<{ success: boolean; error?: string }> => {
-    const token = localStorage.getItem('jwt_token');
-    if (!token) {
-      return { success: false, error: 'Please login to clear cart' };
-    }
-
     try {
-      const response = await fetch(`${API_BASE_URL}/cart`, {
-        method: 'DELETE',
-        headers: getAuthHeaders(),
-      });
-
-      if (response.ok) {
-        await fetchCart(); // Refresh cart data
-        return { success: true };
-      } else {
-        const data = await response.json();
-        return { success: false, error: data.message || 'Failed to clear cart' };
-      }
+      await api.delete('/cart');
+      await fetchCart(); // Refresh cart data
+      return { success: true };
     } catch (error) {
       console.error('Error clearing cart:', error);
-      return { success: false, error: 'Network error. Please try again.' };
+      return { success: false, error: 'Failed to clear cart' };
     }
   };
 

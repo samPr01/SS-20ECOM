@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { authFetch } from "@/utils/mockAuth";
+import { API_BASE_URL } from "@/config/api";
 
 export default function SignIn() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -16,7 +16,7 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { login, register } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -38,25 +38,14 @@ export default function SignIn() {
     try {
       console.log('Submitting form:', { isSignUp, formData });
       
-      const endpoint = isSignUp ? "/api/auth/register" : "/api/auth/login";
-      console.log('Making request to:', endpoint);
-      
-      const response = await authFetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      let result;
+      if (isSignUp) {
+        result = await register(formData);
+      } else {
+        result = await login({ email: formData.email, password: formData.password });
+      }
 
-      console.log('Response received:', response);
-      const data = await response.json();
-      console.log('Response data:', data);
-
-      if (response.ok) {
-        // Use the auth context to login
-        login(data.user);
-        
+      if (result.success) {
         toast({
           title: isSignUp ? "Account created successfully!" : "Welcome back!",
           description: isSignUp 
@@ -69,7 +58,7 @@ export default function SignIn() {
       } else {
         toast({
           title: "Error",
-          description: data.error || "Something went wrong. Please try again.",
+          description: result.error || "Something went wrong. Please try again.",
           variant: "destructive",
         });
       }

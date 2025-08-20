@@ -48,6 +48,7 @@ const AdminAddresses = lazy(() => import("./pages/AdminAddresses"));
 const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const AdminActivityLogs = lazy(() => import("./pages/AdminActivityLogs"));
+const AdminUpload = lazy(() => import("./pages/admin/AdminUpload"));
 
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -107,6 +108,7 @@ const App = () => (
                 <Route path="/admin/analytics" element={<AdminAnalytics />} />
                 <Route path="/admin/settings" element={<AdminSettings />} />
                 <Route path="/admin/activity-logs" element={<AdminActivityLogs />} />
+                <Route path="/admin/upload" element={<AdminUpload />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
