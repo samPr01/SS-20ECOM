@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "vite --config vite.config.client.ts",
+    "build:netlify": "vite build --config vite.config.client.ts",
+    "build": "vite build --config vite.config.client.ts",
     "test:backend": "cd backend && npm run test:quick",
     "test:frontend-backend": "node client/test-frontend-backend.js",
     "test:all": "npm run dev:backend & sleep 5 && npm run test:frontend-backend"
