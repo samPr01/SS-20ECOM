@@ -1,4 +1,8 @@
 import { createContext, useContext, useReducer, useEffect, ReactNode } from "react";
+import { getAuthHeaders } from './useAuth';
+
+// API base URL - adjust this to match your backend URL
+const API_BASE_URL = 'http://localhost:5000/api';
 
 export interface OrderItem {
   id: string;
@@ -31,6 +35,38 @@ export interface Order {
   total: number;
   discountCode?: string;
   discountAmount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Backend order interfaces
+interface BackendOrderItem {
+  _id: string;
+  productId: {
+    _id: string;
+    name: string;
+    image: string;
+  };
+  quantity: number;
+  price: number;
+  name: string;
+}
+
+interface BackendOrder {
+  _id: string;
+  userId: string;
+  items: BackendOrderItem[];
+  total: number;
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  shippingAddress: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  paymentMethod: string;
+  paymentStatus: "pending" | "completed" | "failed";
   createdAt: string;
   updatedAt: string;
 }
@@ -75,13 +111,49 @@ const ordersReducer = (state: OrdersState, action: OrdersAction): OrdersState =>
   }
 };
 
+// Convert backend order to frontend format
+const convertBackendOrder = (backendOrder: BackendOrder): Order => ({
+  id: backendOrder._id,
+  userId: backendOrder.userId,
+  items: backendOrder.items.map(item => ({
+    id: item._id,
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity,
+    image: item.productId.image,
+  })),
+  shippingAddress: {
+    fullName: '', // Backend doesn't store full name separately
+    phone: '', // Backend doesn't store phone
+    email: '', // Backend doesn't store email
+    address: backendOrder.shippingAddress.street,
+    city: backendOrder.shippingAddress.city,
+    state: backendOrder.shippingAddress.state,
+    zipCode: backendOrder.shippingAddress.zipCode,
+    country: backendOrder.shippingAddress.country,
+  },
+  paymentMethod: backendOrder.paymentMethod,
+  paymentStatus: backendOrder.paymentStatus,
+  orderStatus: backendOrder.status,
+  subtotal: backendOrder.total, // Backend doesn't separate subtotal
+  shipping: 0, // Backend doesn't store shipping separately
+  tax: 0, // Backend doesn't store tax separately
+  total: backendOrder.total,
+  discountCode: undefined,
+  discountAmount: 0,
+  createdAt: backendOrder.createdAt,
+  updatedAt: backendOrder.updatedAt,
+});
+
 interface OrdersContextType {
   state: OrdersState;
-  addOrder: (order: Omit<Order, "id" | "createdAt" | "updatedAt">) => void;
-  updateOrder: (id: string, updates: Partial<Order>) => void;
+  addOrder: (order: Omit<Order, "id" | "createdAt" | "updatedAt">) => Promise<{ success: boolean; error?: string }>;
+  updateOrder: (id: string, updates: Partial<Order>) => Promise<{ success: boolean; error?: string }>;
   getOrder: (id: string) => Order | undefined;
   getUserOrders: (userId: string) => Order[];
   clearOrders: () => void;
+  fetchOrders: () => Promise<void>;
+  placeOrderFromCart: (shippingAddress: Order['shippingAddress'], paymentMethod: string) => Promise<{ success: boolean; error?: string; orderId?: string }>;
 }
 
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
@@ -105,41 +177,143 @@ export const OrdersProvider = ({ children }: OrdersProviderProps) => {
     error: null,
   });
 
-  // Load orders from localStorage on mount
-  useEffect(() => {
+  // Fetch orders from API
+  const fetchOrders = async () => {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      dispatch({ type: "SET_ORDERS", payload: [] });
+      return;
+    }
+
+    dispatch({ type: "SET_LOADING", payload: true });
+    dispatch({ type: "SET_ERROR", payload: null });
+
     try {
-      const savedOrders = localStorage.getItem("orders");
-      if (savedOrders) {
-        const orders = JSON.parse(savedOrders);
-        dispatch({ type: "SET_ORDERS", payload: orders });
+      const response = await fetch(`${API_BASE_URL}/orders`, {
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const convertedOrders = data.orders.map(convertBackendOrder);
+        dispatch({ type: "SET_ORDERS", payload: convertedOrders });
+      } else if (response.status === 401) {
+        // User not authenticated, clear orders
+        dispatch({ type: "SET_ORDERS", payload: [] });
+      } else {
+        throw new Error('Failed to fetch orders');
       }
     } catch (error) {
-      console.error("Error loading orders from localStorage:", error);
+      console.error("Error fetching orders:", error);
       dispatch({ type: "SET_ERROR", payload: "Failed to load orders" });
+    } finally {
+      dispatch({ type: "SET_LOADING", payload: false });
     }
-  }, []);
-
-  // Save orders to localStorage whenever orders change
-  useEffect(() => {
-    try {
-      localStorage.setItem("orders", JSON.stringify(state.orders));
-    } catch (error) {
-      console.error("Error saving orders to localStorage:", error);
-    }
-  }, [state.orders]);
-
-  const addOrder = (orderData: Omit<Order, "id" | "createdAt" | "updatedAt">) => {
-    const newOrder: Order = {
-      ...orderData,
-      id: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    dispatch({ type: "ADD_ORDER", payload: newOrder });
   };
 
-  const updateOrder = (id: string, updates: Partial<Order>) => {
-    dispatch({ type: "UPDATE_ORDER", payload: { id, updates } });
+  // Load orders on mount
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const addOrder = async (orderData: Omit<Order, "id" | "createdAt" | "updatedAt">): Promise<{ success: boolean; error?: string }> => {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      return { success: false, error: 'Please login to place an order' };
+    }
+
+    try {
+      // Convert frontend order format to backend format
+      const backendOrderData = {
+        items: orderData.items.map(item => ({
+          productId: item.id,
+          quantity: item.quantity,
+        })),
+        shippingAddress: {
+          street: orderData.shippingAddress.address,
+          city: orderData.shippingAddress.city,
+          state: orderData.shippingAddress.state,
+          zipCode: orderData.shippingAddress.zipCode,
+          country: orderData.shippingAddress.country,
+        },
+        paymentMethod: orderData.paymentMethod,
+      };
+
+      const response = await fetch(`${API_BASE_URL}/orders`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(backendOrderData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const newOrder = convertBackendOrder(data.order);
+        dispatch({ type: "ADD_ORDER", payload: newOrder });
+        return { success: true };
+      } else {
+        const data = await response.json();
+        return { success: false, error: data.message || 'Failed to place order' };
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
+  };
+
+  const placeOrderFromCart = async (shippingAddress: Order['shippingAddress'], paymentMethod: string): Promise<{ success: boolean; error?: string; orderId?: string }> => {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      return { success: false, error: 'Please login to place an order' };
+    }
+
+    try {
+      const backendOrderData = {
+        shippingAddress: {
+          street: shippingAddress.address,
+          city: shippingAddress.city,
+          state: shippingAddress.state,
+          zipCode: shippingAddress.zipCode,
+          country: shippingAddress.country,
+        },
+        paymentMethod: paymentMethod,
+      };
+
+      const response = await fetch(`${API_BASE_URL}/orders/from-cart`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(backendOrderData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const newOrder = convertBackendOrder(data.order);
+        dispatch({ type: "ADD_ORDER", payload: newOrder });
+        return { success: true, orderId: newOrder.id };
+      } else {
+        const data = await response.json();
+        return { success: false, error: data.message || 'Failed to place order from cart' };
+      }
+    } catch (error) {
+      console.error("Error placing order from cart:", error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
+  };
+
+  const updateOrder = async (id: string, updates: Partial<Order>): Promise<{ success: boolean; error?: string }> => {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      return { success: false, error: 'Please login to update order' };
+    }
+
+    try {
+      // For now, we'll just update local state
+      // Backend doesn't have an update order endpoint in the current implementation
+      dispatch({ type: "UPDATE_ORDER", payload: { id, updates } });
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating order:", error);
+      return { success: false, error: 'Failed to update order' };
+    }
   };
 
   const getOrder = (id: string): Order | undefined => {
@@ -163,6 +337,8 @@ export const OrdersProvider = ({ children }: OrdersProviderProps) => {
     getOrder,
     getUserOrders,
     clearOrders,
+    fetchOrders,
+    placeOrderFromCart,
   };
 
   return (

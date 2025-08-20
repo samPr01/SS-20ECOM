@@ -1,5 +1,7 @@
 import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { Product } from '@/data/allProducts';
+import { useAuthApi } from './useAuthApi';
+import { API_BASE_URL } from '../src/config/api';
 
 // Cart item interface
 export interface CartItem {
@@ -9,6 +11,31 @@ export interface CartItem {
   selected: boolean;
 }
 
+// Backend cart item interface
+interface BackendCartItem {
+  _id: string;
+  productId: {
+    _id: string;
+    name: string;
+    price: number;
+    image: string;
+    stock: number;
+  };
+  quantity: number;
+}
+
+// Backend cart response interface
+interface BackendCartResponse {
+  cart: {
+    _id: string;
+    userId: string;
+    items: BackendCartItem[];
+    total: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
 // Cart state interface
 interface CartState {
   items: CartItem[];
@@ -16,10 +43,14 @@ interface CartState {
   discountPercentage: number;
   shippingCost: number;
   isLoading: boolean;
+  error: string | null;
 }
 
 // Cart actions
 type CartAction =
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'SET_CART_ITEMS'; payload: CartItem[] }
   | { type: 'ADD_ITEM'; payload: Product }
   | { type: 'REMOVE_ITEM'; payload: string }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
@@ -27,8 +58,7 @@ type CartAction =
   | { type: 'CLEAR_CART' }
   | { type: 'APPLY_DISCOUNT'; payload: { code: string; percentage: number } }
   | { type: 'REMOVE_DISCOUNT' }
-  | { type: 'SET_SHIPPING_COST'; payload: number }
-  | { type: 'SET_LOADING'; payload: boolean };
+  | { type: 'SET_SHIPPING_COST'; payload: number };
 
 // Initial state
 const initialState: CartState = {
@@ -37,11 +67,40 @@ const initialState: CartState = {
   discountPercentage: 0,
   shippingCost: 0,
   isLoading: false,
+  error: null,
 };
+
+// Convert backend cart item to frontend format
+const convertBackendCartItem = (backendItem: BackendCartItem): CartItem => ({
+  id: backendItem.productId._id,
+  product: {
+    id: parseInt(backendItem.productId._id.slice(-6), 16),
+    name: backendItem.productId.name,
+    description: '', // Backend doesn't provide description in cart
+    image: backendItem.productId.image,
+    price: backendItem.productId.price,
+    category: '', // Backend doesn't provide category in cart
+    rating: 4.5,
+    discount: 0,
+    originalPrice: backendItem.productId.price,
+    reviews: 0,
+  },
+  quantity: backendItem.quantity,
+  selected: true,
+});
 
 // Cart reducer
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.payload };
+    
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
+    
+    case 'SET_CART_ITEMS':
+      return { ...state, items: action.payload };
+
     case 'ADD_ITEM': {
       const existingItem = state.items.find(item => item.id === action.payload.id);
       
@@ -59,7 +118,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return {
         ...state,
         items: [...state.items, {
-          id: action.payload.id,
+          id: action.payload.id.toString(),
           product: action.payload,
           quantity: 1,
           selected: true,
@@ -121,12 +180,6 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         shippingCost: action.payload,
       };
 
-    case 'SET_LOADING':
-      return {
-        ...state,
-        isLoading: action.payload,
-      };
-
     default:
       return state;
   }
@@ -136,11 +189,11 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 const CartContext = createContext<{
   state: CartState;
   dispatch: React.Dispatch<CartAction>;
-  addToCart: (product: Product) => void;
-  removeFromCart: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  addToCart: (product: Product) => Promise<{ success: boolean; error?: string }>;
+  removeFromCart: (id: string) => Promise<{ success: boolean; error?: string }>;
+  updateQuantity: (id: string, quantity: number) => Promise<{ success: boolean; error?: string }>;
   toggleItemSelection: (id: string) => void;
-  clearCart: () => void;
+  clearCart: () => Promise<{ success: boolean; error?: string }>;
   applyDiscount: (code: string) => boolean;
   removeDiscount: () => void;
   getSelectedItems: () => CartItem[];
@@ -148,59 +201,161 @@ const CartContext = createContext<{
   getDiscountAmount: () => number;
   getTotal: () => number;
   getItemCount: () => number;
+  refreshCart: () => Promise<void>;
 } | null>(null);
 
 // Cart provider
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        const parsedCart = JSON.parse(savedCart);
-        if (parsedCart.items) {
-          parsedCart.items.forEach((item: any) => {
-            dispatch({ type: 'ADD_ITEM', payload: item.product });
-            if (item.quantity > 1) {
-              dispatch({ 
-                type: 'UPDATE_QUANTITY', 
-                payload: { id: item.id, quantity: item.quantity } 
-              });
-            }
-          });
-        }
-      } catch (error) {
-        console.error('Error loading cart from localStorage:', error);
-      }
+  // Fetch cart from API
+  const fetchCart = async () => {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      dispatch({ type: 'SET_CART_ITEMS', payload: [] });
+      return;
     }
+
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_ERROR', payload: null });
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/cart`, {
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        const data: BackendCartResponse = await response.json();
+        const convertedItems = data.cart.items.map(convertBackendCartItem);
+        dispatch({ type: 'SET_CART_ITEMS', payload: convertedItems });
+      } else if (response.status === 401) {
+        // User not authenticated, clear cart
+        dispatch({ type: 'SET_CART_ITEMS', payload: [] });
+      } else {
+        throw new Error('Failed to fetch cart');
+      }
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to load cart' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
+  // Load cart on mount
+  useEffect(() => {
+    fetchCart();
   }, []);
 
-  // Save cart to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(state));
-  }, [state]);
+  // API helper functions
+  const addToCart = async (product: Product): Promise<{ success: boolean; error?: string }> => {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      return { success: false, error: 'Please login to add items to cart' };
+    }
 
-  // Helper functions
-  const addToCart = (product: Product) => {
-    dispatch({ type: 'ADD_ITEM', payload: product });
+    try {
+      const response = await fetch(`${API_BASE_URL}/cart`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          productId: product.id.toString(),
+          quantity: 1,
+        }),
+      });
+
+      if (response.ok) {
+        await fetchCart(); // Refresh cart data
+        return { success: true };
+      } else {
+        const data = await response.json();
+        return { success: false, error: data.message || 'Failed to add item to cart' };
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
   };
 
-  const removeFromCart = (id: string) => {
-    dispatch({ type: 'REMOVE_ITEM', payload: id });
+  const removeFromCart = async (id: string): Promise<{ success: boolean; error?: string }> => {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      return { success: false, error: 'Please login to remove items from cart' };
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/cart/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        await fetchCart(); // Refresh cart data
+        return { success: true };
+      } else {
+        const data = await response.json();
+        return { success: false, error: data.message || 'Failed to remove item from cart' };
+      }
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
   };
 
-  const updateQuantity = (id: string, quantity: number) => {
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
+  const updateQuantity = async (id: string, quantity: number): Promise<{ success: boolean; error?: string }> => {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      return { success: false, error: 'Please login to update cart' };
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/cart/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ quantity }),
+      });
+
+      if (response.ok) {
+        await fetchCart(); // Refresh cart data
+        return { success: true };
+      } else {
+        const data = await response.json();
+        return { success: false, error: data.message || 'Failed to update quantity' };
+      }
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
   };
 
+  const clearCart = async (): Promise<{ success: boolean; error?: string }> => {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      return { success: false, error: 'Please login to clear cart' };
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/cart`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        await fetchCart(); // Refresh cart data
+        return { success: true };
+      } else {
+        const data = await response.json();
+        return { success: false, error: data.message || 'Failed to clear cart' };
+      }
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
+  };
+
+  // Local state functions (no API calls needed)
   const toggleItemSelection = (id: string) => {
     dispatch({ type: 'TOGGLE_ITEM_SELECTION', payload: id });
-  };
-
-  const clearCart = () => {
-    dispatch({ type: 'CLEAR_CART' });
   };
 
   const applyDiscount = (code: string): boolean => {
@@ -252,6 +407,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return state.items.reduce((total, item) => total + item.quantity, 0);
   };
 
+  const refreshCart = async () => {
+    await fetchCart();
+  };
+
   const value = {
     state,
     dispatch,
@@ -267,6 +426,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     getDiscountAmount,
     getTotal,
     getItemCount,
+    refreshCart,
   };
 
   return (

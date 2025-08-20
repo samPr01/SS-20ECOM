@@ -14,12 +14,23 @@ import {
   AlertCircle,
   Lock,
   Shield,
-  Clock
+  Clock,
+  Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuthApi } from "@/hooks/useAuthApi";
+
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image?: string;
+  description?: string;
+}
 
 interface PaymentGatewayProps {
-  amount: number;
+  cartItems: CartItem[];
   currency?: string;
   onPaymentSuccess: (paymentData: any) => void;
   onPaymentError: (error: string) => void;
@@ -39,39 +50,26 @@ interface PaymentMethod {
 }
 
 export default function PaymentGateway({
-  amount,
-  currency = "INR",
+  cartItems,
+  currency = "USD",
   onPaymentSuccess,
   onPaymentError,
   orderId,
   customerEmail,
   customerName
 }: PaymentGatewayProps) {
-  const [selectedMethod, setSelectedMethod] = useState<string>("");
+  const [selectedMethod, setSelectedMethod] = useState<string>("stripe");
   const [loading, setLoading] = useState(false);
-  const [cardDetails, setCardDetails] = useState({
-    number: "",
-    expiry: "",
-    cvv: "",
-    name: customerName || ""
-  });
+  const [stripeLoading, setStripeLoading] = useState(false);
   const { toast } = useToast();
+  const api = useAuthApi();
 
   const paymentMethods: PaymentMethod[] = [
     {
       id: "stripe",
       name: "Credit/Debit Card",
-      description: "Pay securely with your card",
+      description: "Pay securely with Stripe",
       icon: <CreditCard className="w-5 h-5" />,
-      processingTime: "Instant",
-      fees: 0,
-      available: true
-    },
-    {
-      id: "razorpay",
-      name: "Razorpay",
-      description: "UPI, Net Banking, Wallets",
-      icon: <Wallet className="w-5 h-5" />,
       processingTime: "Instant",
       fees: 0,
       available: true
@@ -82,13 +80,14 @@ export default function PaymentGateway({
       description: "Pay when you receive your order",
       icon: <Truck className="w-5 h-5" />,
       processingTime: "On Delivery",
-      fees: 50,
+      fees: 5,
       available: true
     }
   ];
 
   const selectedPaymentMethod = paymentMethods.find(method => method.id === selectedMethod);
-  const totalAmount = selectedPaymentMethod ? amount + selectedPaymentMethod.fees : amount;
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalAmount = selectedPaymentMethod ? subtotal + selectedPaymentMethod.fees : subtotal;
 
   const handlePayment = async () => {
     if (!selectedMethod) {
@@ -106,9 +105,6 @@ export default function PaymentGateway({
       switch (selectedMethod) {
         case "stripe":
           await handleStripePayment();
-          break;
-        case "razorpay":
-          await handleRazorpayPayment();
           break;
         case "cod":
           await handleCODPayment();
@@ -130,43 +126,40 @@ export default function PaymentGateway({
   };
 
   const handleStripePayment = async () => {
-    // Simulate Stripe payment
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    setStripeLoading(true);
     
-    const paymentData = {
-      method: "stripe",
-      transactionId: `txn_${Date.now()}`,
-      amount: totalAmount,
-      currency,
-      status: "success",
-      timestamp: new Date().toISOString()
-    };
+    try {
+      // Prepare items for Stripe
+      const stripeItems = cartItems.map(item => ({
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image,
+        description: item.description
+      }));
 
-    onPaymentSuccess(paymentData);
-    toast({
-      title: "Payment Successful!",
-      description: "Your payment has been processed successfully.",
-    });
-  };
+      // Create checkout session using authenticated API
+      const response = await api.post('/api/payment/create-checkout-session', {
+        items: stripeItems,
+        successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/cart`,
+      });
 
-  const handleRazorpayPayment = async () => {
-    // Simulate Razorpay payment
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    const paymentData = {
-      method: "razorpay",
-      transactionId: `rzp_${Date.now()}`,
-      amount: totalAmount,
-      currency,
-      status: "success",
-      timestamp: new Date().toISOString()
-    };
+      const { sessionId, url } = response;
 
-    onPaymentSuccess(paymentData);
-    toast({
-      title: "Payment Successful!",
-      description: "Your payment has been processed successfully.",
-    });
+      // Redirect to Stripe Checkout
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+
+    } catch (error) {
+      console.error('Stripe payment error:', error);
+      throw error;
+    } finally {
+      setStripeLoading(false);
+    }
   };
 
   const handleCODPayment = async () => {
@@ -190,7 +183,7 @@ export default function PaymentGateway({
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,
     }).format(amount);
@@ -249,76 +242,38 @@ export default function PaymentGateway({
         </CardContent>
       </Card>
 
-      {/* Card Details (for Stripe) */}
-      {selectedMethod === "stripe" && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <CreditCard className="w-5 h-5" />
-              <span>Card Details</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="cardName">Cardholder Name</Label>
-              <Input
-                id="cardName"
-                value={cardDetails.name}
-                onChange={(e) => setCardDetails(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="John Doe"
-              />
-            </div>
-            <div>
-              <Label htmlFor="cardNumber">Card Number</Label>
-              <Input
-                id="cardNumber"
-                value={cardDetails.number}
-                onChange={(e) => setCardDetails(prev => ({ ...prev, number: e.target.value }))}
-                placeholder="1234 5678 9012 3456"
-                maxLength={19}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="expiry">Expiry Date</Label>
-                <Input
-                  id="expiry"
-                  value={cardDetails.expiry}
-                  onChange={(e) => setCardDetails(prev => ({ ...prev, expiry: e.target.value }))}
-                  placeholder="MM/YY"
-                  maxLength={5}
-                />
-              </div>
-              <div>
-                <Label htmlFor="cvv">CVV</Label>
-                <Input
-                  id="cvv"
-                  value={cardDetails.cvv}
-                  onChange={(e) => setCardDetails(prev => ({ ...prev, cvv: e.target.value }))}
-                  placeholder="123"
-                  maxLength={4}
-                  type="password"
-                />
-              </div>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <Lock className="w-4 h-4" />
-              <span>Your payment information is secure and encrypted</span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Payment Summary */}
+      {/* Order Summary */}
       <Card>
         <CardHeader>
-          <CardTitle>Payment Summary</CardTitle>
+          <CardTitle>Order Summary</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
+            {cartItems.map((item) => (
+              <div key={item.id} className="flex justify-between items-center">
+                <div className="flex items-center space-x-3">
+                  {item.image && (
+                    <img 
+                      src={item.image} 
+                      alt={item.name} 
+                      className="w-10 h-10 rounded object-cover"
+                    />
+                  )}
+                  <div>
+                    <div className="font-medium">{item.name}</div>
+                    <div className="text-sm text-gray-500">Qty: {item.quantity}</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-medium">{formatCurrency(item.price * item.quantity)}</div>
+                  <div className="text-sm text-gray-500">{formatCurrency(item.price)} each</div>
+                </div>
+              </div>
+            ))}
+            <Separator />
             <div className="flex justify-between">
-              <span>Order Amount</span>
-              <span>{formatCurrency(amount)}</span>
+              <span>Subtotal</span>
+              <span>{formatCurrency(subtotal)}</span>
             </div>
             {selectedPaymentMethod && selectedPaymentMethod.fees > 0 && (
               <div className="flex justify-between">
@@ -332,33 +287,46 @@ export default function PaymentGateway({
               <span>{formatCurrency(totalAmount)}</span>
             </div>
           </div>
+        </CardContent>
+      </Card>
 
-          <div className="mt-6">
-            <Button
-              onClick={handlePayment}
-              disabled={!selectedMethod || loading}
-              className="w-full"
-              size="lg"
-            >
-              {loading ? (
-                <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  <span>Processing Payment...</span>
-                </div>
-              ) : (
-                <div className="flex items-center space-x-2">
-                  <Lock className="w-4 h-4" />
-                  <span>Pay {formatCurrency(totalAmount)}</span>
-                </div>
-              )}
-            </Button>
-          </div>
+      {/* Payment Button */}
+      <Card>
+        <CardContent className="pt-6">
+          <Button
+            onClick={handlePayment}
+            disabled={!selectedMethod || loading || stripeLoading}
+            className="w-full"
+            size="lg"
+          >
+            {loading || stripeLoading ? (
+              <div className="flex items-center space-x-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>
+                  {stripeLoading ? "Redirecting to Stripe..." : "Processing Payment..."}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Lock className="w-4 h-4" />
+                <span>Pay {formatCurrency(totalAmount)}</span>
+              </div>
+            )}
+          </Button>
 
           {/* Security Notice */}
           <div className="mt-4 p-3 bg-green-50 rounded-lg">
             <div className="flex items-center space-x-2 text-sm text-green-700">
               <CheckCircle className="w-4 h-4" />
-              <span>Secure payment powered by industry-standard encryption</span>
+              <span>Secure payment powered by Stripe</span>
+            </div>
+          </div>
+
+          {/* Test Mode Notice */}
+          <div className="mt-2 p-2 bg-yellow-50 rounded-lg">
+            <div className="flex items-center space-x-2 text-sm text-yellow-700">
+              <AlertCircle className="w-4 h-4" />
+              <span>Test Mode: Use test card 4242 4242 4242 4242</span>
             </div>
           </div>
         </CardContent>
