@@ -36,7 +36,7 @@ interface SystemSettings {
     marketingEmails: boolean;
   };
   payment: {
-    enableStripe: boolean;
+    enableRazorpay: boolean;
     enablePayPal: boolean;
     enableCOD: boolean;
     taxRate: number;
@@ -69,7 +69,7 @@ export default function AdminSettings() {
       marketingEmails: false
     },
     payment: {
-      enableStripe: true,
+      enableRazorpay: true,
       enablePayPal: false,
       enableCOD: true,
       taxRate: 18,
@@ -128,7 +128,7 @@ export default function AdminSettings() {
           marketingEmails: false
         },
         payment: {
-          enableStripe: true,
+          enableRazorpay: true,
           enablePayPal: false,
           enableCOD: true,
           taxRate: 18,
@@ -432,14 +432,14 @@ export default function AdminSettings() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label>Enable Stripe</Label>
-                    <p className="text-sm text-gray-500">Accept credit card payments via Stripe</p>
+                    <Label>Enable Razorpay</Label>
+                    <p className="text-sm text-gray-500">Accept credit card payments via Razorpay</p>
                   </div>
                   <Switch
-                    checked={settings.payment.enableStripe}
+                    checked={settings.payment.enableRazorpay}
                     onCheckedChange={(checked) => setSettings(prev => ({
                       ...prev,
-                      payment: { ...prev.payment, enableStripe: checked }
+                      payment: { ...prev.payment, enableRazorpay: checked }
                     }))}
                   />
                 </div>

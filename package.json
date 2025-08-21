@@ -2,6 +2,7 @@
   "name": "ss-20ecom",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "vite --config vite.config.client.ts",
@@ -9,7 +10,8 @@
     "build": "vite build --config vite.config.client.ts",
     "test:backend": "cd backend && npm run test:quick",
     "test:frontend-backend": "node client/test-frontend-backend.js",
-    "test:all": "npm run dev:backend & sleep 5 && npm run test:frontend-backend"
+    "test:all": "npm run dev:backend & sleep 5 && npm run test:frontend-backend",
+    "test:production": "node test-production.js"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",

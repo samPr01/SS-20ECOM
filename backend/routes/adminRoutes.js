@@ -1,4 +1,5 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import csv from 'csv-parser';
 import fs from 'fs';
@@ -9,6 +10,26 @@ import Product from '../models/Product.js';
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Middleware to authenticate admin using JWT
+const authenticateAdmin = (req, res, next) => {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+  
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+};
+
+// Protect all admin routes
+router.use(authenticateAdmin);
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, '../uploads');

@@ -51,7 +51,7 @@ const testPaymentEndpoint = async () => {
     console.log('\n✅ Payment endpoint tests completed!');
     console.log('\n📋 Environment check:');
     console.log(`   - CLIENT_URL: ${process.env.CLIENT_URL || 'Not set'}`);
-    console.log(`   - STRIPE_SECRET_KEY: ${process.env.STRIPE_SECRET_KEY ? 'Configured' : 'Not configured'}`);
+    console.log(`   - RAZORPAY_KEY_SECRET: ${process.env.RAZORPAY_KEY_SECRET ? 'Configured' : 'Not configured'}`);
     console.log(`   - Server URL: ${API_BASE_URL}`);
     
   } catch (error) {

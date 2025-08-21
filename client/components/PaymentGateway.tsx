@@ -58,17 +58,16 @@ export default function PaymentGateway({
   customerEmail,
   customerName
 }: PaymentGatewayProps) {
-  const [selectedMethod, setSelectedMethod] = useState<string>("stripe");
-  const [loading, setLoading] = useState(false);
-  const [stripeLoading, setStripeLoading] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState<string>("razorpay");
+const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const api = useAuthApi();
 
   const paymentMethods: PaymentMethod[] = [
     {
-      id: "stripe",
+      id: "razorpay",
       name: "Credit/Debit Card",
-      description: "Pay securely with Stripe",
+      description: "Pay securely with Razorpay",
       icon: <CreditCard className="w-5 h-5" />,
       processingTime: "Instant",
       fees: 0,
@@ -103,8 +102,8 @@ export default function PaymentGateway({
 
     try {
       switch (selectedMethod) {
-        case "stripe":
-          await handleStripePayment();
+        case "razorpay":
+          await handleRazorpayPayment();
           break;
         case "cod":
           await handleCODPayment();
@@ -125,12 +124,10 @@ export default function PaymentGateway({
     }
   };
 
-  const handleStripePayment = async () => {
-    setStripeLoading(true);
-    
+  const handleRazorpayPayment = async () => {
     try {
-      // Prepare items for Stripe
-      const stripeItems = cartItems.map(item => ({
+      // Prepare items for Razorpay
+      const razorpayItems = cartItems.map(item => ({
         name: item.name,
         price: item.price,
         quantity: item.quantity,
@@ -138,27 +135,58 @@ export default function PaymentGateway({
         description: item.description
       }));
 
-      // Create checkout session using authenticated API
-      const response = await api.post('/api/payment/create-checkout-session', {
-        items: stripeItems,
-        successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: `${window.location.origin}/cart`,
+      // Create Razorpay order using authenticated API
+      const response = await api.post('/api/payment/create-order', {
+        amount: totalAmount * 100, // Razorpay expects amount in paise
+        currency: currency,
+        items: razorpayItems,
       });
 
-      const { sessionId, url } = response;
+      const { orderId, key } = response;
 
-      // Redirect to Stripe Checkout
-      if (url) {
-        window.location.href = url;
-      } else {
-        throw new Error('No checkout URL received');
-      }
+      // Initialize Razorpay
+      const options = {
+        key: key,
+        amount: totalAmount * 100,
+        currency: currency,
+        name: "E-Commerce Store",
+        description: "Payment for your order",
+        order_id: orderId,
+        handler: function (response: any) {
+          // Verify payment on backend
+          api.post('/api/payment/verify-payment', {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+          }).then(() => {
+            onPaymentSuccess({
+              method: "razorpay",
+              orderId: orderId,
+              amount: totalAmount,
+              currency,
+              status: "completed",
+              timestamp: new Date().toISOString()
+            });
+          }).catch((error) => {
+            console.error('Payment verification failed:', error);
+            onPaymentError("Payment verification failed");
+          });
+        },
+        prefill: {
+          name: customerName,
+          email: customerEmail,
+        },
+        theme: {
+          color: "#7c3aed"
+        }
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
 
     } catch (error) {
-      console.error('Stripe payment error:', error);
+      console.error('Razorpay payment error:', error);
       throw error;
-    } finally {
-      setStripeLoading(false);
     }
   };
 
@@ -295,16 +323,14 @@ export default function PaymentGateway({
         <CardContent className="pt-6">
           <Button
             onClick={handlePayment}
-            disabled={!selectedMethod || loading || stripeLoading}
+            disabled={!selectedMethod || loading}
             className="w-full"
             size="lg"
           >
-            {loading || stripeLoading ? (
+            {loading ? (
               <div className="flex items-center space-x-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>
-                  {stripeLoading ? "Redirecting to Stripe..." : "Processing Payment..."}
-                </span>
+                <span>Processing Payment...</span>
               </div>
             ) : (
               <div className="flex items-center space-x-2">
@@ -318,7 +344,7 @@ export default function PaymentGateway({
           <div className="mt-4 p-3 bg-green-50 rounded-lg">
             <div className="flex items-center space-x-2 text-sm text-green-700">
               <CheckCircle className="w-4 h-4" />
-              <span>Secure payment powered by Stripe</span>
+              <span>Secure payment powered by Razorpay</span>
             </div>
           </div>
 
@@ -326,7 +352,7 @@ export default function PaymentGateway({
           <div className="mt-2 p-2 bg-yellow-50 rounded-lg">
             <div className="flex items-center space-x-2 text-sm text-yellow-700">
               <AlertCircle className="w-4 h-4" />
-              <span>Test Mode: Use test card 4242 4242 4242 4242</span>
+              <span>Test Mode: Use Razorpay test credentials</span>
             </div>
           </div>
         </CardContent>

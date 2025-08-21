@@ -35,8 +35,8 @@ check_env_vars() {
         exit 1
     fi
     
-    if [ -z "$STRIPE_SECRET_KEY" ]; then
-        print_error "STRIPE_SECRET_KEY is not set"
+    if [ -z "$RAZORPAY_KEY_SECRET" ]; then
+  print_error "RAZORPAY_KEY_SECRET is not set"
         exit 1
     fi
     

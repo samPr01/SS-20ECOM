@@ -129,7 +129,7 @@ app.post('/api/orders/from-cart', (req, res) => {
 app.get('/api/payment/test', (req, res) => {
   res.json({
     message: 'Payment routes are working!',
-    stripe_configured: false,
+    razorpay_configured: false,
     client_url: process.env.CLIENT_URL || 'http://localhost:5173',
     mode: 'test'
   });
@@ -137,7 +137,7 @@ app.get('/api/payment/test', (req, res) => {
 
 app.post('/api/payment/create-checkout-session', (req, res) => {
   res.json({
-    url: 'https://checkout.stripe.com/test-session-url'
+    url: 'https://checkout.razorpay.com/test-order-url'
   });
 });
 

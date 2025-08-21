@@ -6,7 +6,7 @@ console.log('====================================');
 if (typeof import.meta !== 'undefined' && import.meta.env) {
   console.log('✅ Vite environment detected');
   console.log('📡 VITE_API_URL:', import.meta.env.VITE_API_URL);
-  console.log('💳 VITE_STRIPE_PUBLIC_KEY:', import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+  console.log('💳 VITE_RAZORPAY_KEY_ID:', import.meta.env.VITE_RAZORPAY_KEY_ID);
   
   // Test API URL construction
   const apiUrl = import.meta.env.VITE_API_URL 

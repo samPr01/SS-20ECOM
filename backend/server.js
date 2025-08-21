@@ -12,10 +12,13 @@ import adminRoutes from './routes/adminRoutes.js';
 dotenv.config();
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // Basic middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:8080',
+  credentials: true
+}));
 app.use(express.json());
 
 // In-memory storage for testing (replace with database in production)

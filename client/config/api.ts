@@ -18,3 +18,5 @@ export const APP_CONFIG = {
   apiUrl: API_BASE_URL,
   razorpayKey: RAZORPAY_KEY_ID,
 };
+
+

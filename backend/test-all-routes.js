@@ -36,7 +36,7 @@ const mockOrder = {
     zipCode: "12345",
     country: "Test Country"
   },
-  paymentMethod: "stripe"
+  paymentMethod: "razorpay"
 };
 
 const mockPaymentItems = [

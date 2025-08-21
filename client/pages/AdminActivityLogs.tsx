@@ -78,7 +78,7 @@ export default function AdminActivityLogs() {
       ipAddress: "192.168.1.100",
       userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
       timestamp: "2024-01-15T07:15:00Z",
-      details: "Stripe payment failed: Insufficient funds"
+      details: "Razorpay payment failed: Insufficient funds"
     },
     {
       id: "log_5",

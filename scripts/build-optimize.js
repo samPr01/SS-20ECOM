@@ -14,21 +14,12 @@ try {
   // Directory might not exist, continue
 }
 
-// Step 2: Generate Prisma Client
-console.log('🔧 Generating Prisma Client...');
-try {
-  execSync('npx prisma generate', { stdio: 'inherit' });
-  console.log('✅ Prisma Client generated successfully');
-} catch (error) {
-  console.error('❌ Failed to generate Prisma Client:', error.message);
-  process.exit(1);
-}
-
-// Step 3: Build the application
+// Step 2: Build the application
 console.log('📦 Building application...');
+
 execSync('npm run build:client', { stdio: 'inherit' });
 
-// Step 4: Optimize bundle
+// Step 3: Optimize bundle
 console.log('⚡ Optimizing bundle...');
 
 // Add service worker for caching
@@ -69,7 +60,7 @@ try {
   console.warn('⚠️  Could not create service worker:', error.message);
 }
 
-// Step 5: Create manifest.json for PWA
+// Step 4: Create manifest.json for PWA
 const manifest = {
   name: 'SS Stores',
   short_name: 'SS Stores',
@@ -97,7 +88,7 @@ try {
   console.warn('⚠️  Could not create manifest:', error.message);
 }
 
-// Step 6: Generate bundle analysis
+// Step 5: Generate bundle analysis
 console.log('📊 Analyzing bundle...');
 try {
   execSync('npx vite-bundle-analyzer dist/spa --mode static --open false', { 

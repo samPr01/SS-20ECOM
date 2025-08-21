@@ -2,9 +2,6 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
-import authRoutes from "./routes/auth";
-import addressRoutes from "./routes/addresses";
-import orderRoutes from "./routes/orders";
 
 export function createServer() {
   const app = express();
@@ -21,11 +18,6 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
-
-  // User management routes
-  app.use("/api/auth", authRoutes);
-  app.use("/api/addresses", addressRoutes);
-  app.use("/api/orders", orderRoutes);
 
   return app;
 }

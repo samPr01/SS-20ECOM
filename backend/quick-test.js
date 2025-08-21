@@ -37,7 +37,7 @@ const quickTest = async () => {
     const paymentResponse = await fetch(`${API_BASE_URL}/payment/test`);
     const paymentData = await paymentResponse.json();
     console.log('✅ Payment Test:', paymentData.message);
-    console.log('   Stripe configured:', paymentData.stripe_configured);
+    console.log('   Razorpay configured:', paymentData.razorpay_configured);
     console.log('   Client URL:', paymentData.client_url);
   } catch (error) {
     console.log('❌ Payment test failed:', error.message);
