@@ -155,6 +155,20 @@ app.post('/api/auth/login', (req, res) => {
   }
 });
 
+// Products route (fallback for when MongoDB is not connected)
+app.get('/api/products', (req, res) => {
+  res.json({
+    products: products,
+    pagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalProducts: products.length,
+      hasNextPage: false,
+      hasPrevPage: false
+    }
+  });
+});
+
 // Mount routes
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
