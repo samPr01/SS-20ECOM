@@ -2,8 +2,10 @@ import express from 'express';
 import Order from '../models/Order.js';
 import Cart from '../models/Cart.js';
 import Product from '../models/Product.js';
-import { authMiddleware } from '../middleware/auth.js';
-import { validateOrder } from '../middleware/validation.js';
+import User from '../models/User.js';
+import { authMiddleware, simpleAdminMiddleware } from '../middleware/auth.js';
+import { validateOrder, validateOrderStatusUpdate } from '../middleware/validation.js';
+import { sendOrderConfirmationEmail, sendOrderStatusUpdateEmail } from '../utils/mailer.js';
 
 const router = express.Router();
 
@@ -136,6 +138,18 @@ router.post('/', authMiddleware, validateOrder, async (req, res) => {
     // Populate product details for response
     await order.populate('items.productId', 'name image');
 
+    // Send order confirmation email
+    try {
+      const user = await User.findById(req.user._id);
+      if (user && user.email) {
+        await sendOrderConfirmationEmail(user.email, order);
+        console.log('✅ Order confirmation email sent to:', user.email);
+      }
+    } catch (emailError) {
+      console.error('❌ Failed to send order confirmation email:', emailError.message);
+      // Don't fail the order creation if email fails
+    }
+
     res.status(201).json({
       message: 'Order placed successfully',
       order: {
@@ -154,6 +168,8 @@ router.post('/', authMiddleware, validateOrder, async (req, res) => {
         paymentStatus: order.paymentStatus,
         shippingAddress: order.shippingAddress,
         paymentMethod: order.paymentMethod,
+        statusHistory: order.getStatusHistory(),
+        currentStatus: order.getCurrentStatus(),
         createdAt: order.createdAt
       }
     });
@@ -233,6 +249,18 @@ router.post('/from-cart', authMiddleware, async (req, res) => {
     // Populate product details for response
     await order.populate('items.productId', 'name image');
 
+    // Send order confirmation email
+    try {
+      const user = await User.findById(req.user._id);
+      if (user && user.email) {
+        await sendOrderConfirmationEmail(user.email, order);
+        console.log('✅ Order confirmation email sent to:', user.email);
+      }
+    } catch (emailError) {
+      console.error('❌ Failed to send order confirmation email:', emailError.message);
+      // Don't fail the order creation if email fails
+    }
+
     res.status(201).json({
       message: 'Order placed successfully from cart',
       order: {
@@ -251,6 +279,8 @@ router.post('/from-cart', authMiddleware, async (req, res) => {
         paymentStatus: order.paymentStatus,
         shippingAddress: order.shippingAddress,
         paymentMethod: order.paymentMethod,
+        statusHistory: order.getStatusHistory(),
+        currentStatus: order.getCurrentStatus(),
         createdAt: order.createdAt
       }
     });
@@ -292,18 +322,184 @@ router.put('/:id/cancel', authMiddleware, async (req, res) => {
       }
     }
 
-    // Update order status
-    order.status = 'cancelled';
-    await order.save();
+    // Update order status with history tracking
+    await order.updateStatus('cancelled', req.user.name || req.user.email, 'Order cancelled by user');
 
     res.json({
       message: 'Order cancelled successfully',
-      order
+      order: {
+        _id: order._id,
+        status: order.status,
+        statusHistory: order.getStatusHistory()
+      }
     });
   } catch (error) {
     console.error('Cancel order error:', error);
     res.status(500).json({ 
       message: 'Error cancelling order' 
+    });
+  }
+});
+
+// PUT /api/orders/:id/status - Update order status (Admin only)
+router.put('/:id/status', simpleAdminMiddleware, validateOrderStatusUpdate, async (req, res) => {
+  try {
+    const { status, notes } = req.body;
+    const orderId = req.params.id;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ 
+        message: 'Order not found' 
+      });
+    }
+
+    // Validate status transition
+    const validTransitions = {
+      'pending': ['confirmed', 'cancelled'],
+      'confirmed': ['processing', 'cancelled'],
+      'processing': ['shipped', 'cancelled'],
+      'shipped': ['delivered'],
+      'delivered': [],
+      'cancelled': []
+    };
+
+    const currentStatus = order.status;
+    const allowedTransitions = validTransitions[currentStatus] || [];
+
+    if (!allowedTransitions.includes(status)) {
+      return res.status(400).json({
+        message: `Invalid status transition from '${currentStatus}' to '${status}'. Allowed transitions: ${allowedTransitions.join(', ')}`
+      });
+    }
+
+    // Update order status with history tracking
+    await order.updateStatus(status, req.user.name || req.user.email, notes || '');
+
+    // Send order status update email
+    try {
+      const user = await User.findById(order.userId);
+      if (user && user.email) {
+        await sendOrderStatusUpdateEmail(user.email, order, status);
+        console.log('✅ Order status update email sent to:', user.email);
+      }
+    } catch (emailError) {
+      console.error('❌ Failed to send order status update email:', emailError.message);
+      // Don't fail the status update if email fails
+    }
+
+    // Populate product details for response
+    await order.populate('items.productId', 'name image');
+
+    res.json({
+      message: 'Order status updated successfully',
+      order: {
+        _id: order._id,
+        userId: order.userId,
+        items: order.items.map(item => ({
+          _id: item._id,
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+          name: item.name,
+          product: item.productId
+        })),
+        total: order.total,
+        status: order.status,
+        paymentStatus: order.paymentStatus,
+        shippingAddress: order.shippingAddress,
+        paymentMethod: order.paymentMethod,
+        statusHistory: order.getStatusHistory(),
+        currentStatus: order.getCurrentStatus(),
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt
+      }
+    });
+  } catch (error) {
+    console.error('Update order status error:', error);
+    res.status(500).json({ 
+      message: 'Error updating order status' 
+    });
+  }
+});
+
+// GET /api/orders/statuses/all - Get all available order statuses
+router.get('/statuses/all', authMiddleware, async (req, res) => {
+  try {
+    const statuses = [
+      { value: 'pending', label: 'Pending', description: 'Order is waiting for confirmation' },
+      { value: 'confirmed', label: 'Confirmed', description: 'Order has been confirmed' },
+      { value: 'processing', label: 'Processing', description: 'Order is being prepared' },
+      { value: 'shipped', label: 'Shipped', description: 'Order has been shipped' },
+      { value: 'delivered', label: 'Delivered', description: 'Order has been delivered' },
+      { value: 'cancelled', label: 'Cancelled', description: 'Order has been cancelled' }
+    ];
+
+    res.json({
+      statuses,
+      validTransitions: {
+        'pending': ['confirmed', 'cancelled'],
+        'confirmed': ['processing', 'cancelled'],
+        'processing': ['shipped', 'cancelled'],
+        'shipped': ['delivered'],
+        'delivered': [],
+        'cancelled': []
+      }
+    });
+  } catch (error) {
+    console.error('Get order statuses error:', error);
+    res.status(500).json({ 
+      message: 'Error fetching order statuses' 
+    });
+  }
+});
+
+// GET /api/orders/:id/status - Get order status and history
+router.get('/:id/status', authMiddleware, async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      _id: req.params.id,
+      userId: req.user._id
+    }).populate('items.productId', 'name image');
+
+    if (!order) {
+      return res.status(404).json({ 
+        message: 'Order not found' 
+      });
+    }
+
+    res.json({
+      order: {
+        _id: order._id,
+        userId: order.userId,
+        items: order.items.map(item => ({
+          _id: item._id,
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+          name: item.name,
+          product: item.productId
+        })),
+        total: order.total,
+        status: order.status,
+        paymentStatus: order.paymentStatus,
+        shippingAddress: order.shippingAddress,
+        paymentMethod: order.paymentMethod,
+        statusHistory: order.getStatusHistory(),
+        currentStatus: order.getCurrentStatus(),
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt
+      }
+    });
+  } catch (error) {
+    console.error('Get order status error:', error);
+    if (error.kind === 'ObjectId') {
+      return res.status(404).json({ 
+        message: 'Order not found' 
+      });
+    }
+    res.status(500).json({ 
+      message: 'Error fetching order status' 
     });
   }
 });

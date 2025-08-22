@@ -35,7 +35,7 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
     default: 'pending'
   },
   shippingAddress: {
@@ -54,7 +54,26 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: ['pending', 'completed', 'failed'],
     default: 'pending'
-  }
+  },
+  statusHistory: [{
+    status: {
+      type: String,
+      enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
+      required: true
+    },
+    changedAt: {
+      type: Date,
+      default: Date.now
+    },
+    changedBy: {
+      type: String,
+      required: true
+    },
+    notes: {
+      type: String,
+      default: ''
+    }
+  }]
 }, {
   timestamps: true
 });
@@ -73,8 +92,31 @@ orderSchema.pre('save', function(next) {
   next();
 });
 
-// Method to update order status
-orderSchema.methods.updateStatus = async function(newStatus) {
+// Initialize status history for new orders
+orderSchema.pre('save', function(next) {
+  if (this.isNew && this.status && this.statusHistory.length === 0) {
+    this.statusHistory.push({
+      status: this.status,
+      changedAt: new Date(),
+      changedBy: 'System',
+      notes: 'Order created'
+    });
+  }
+  next();
+});
+
+// Method to update order status with history tracking
+orderSchema.methods.updateStatus = async function(newStatus, changedBy, notes = '') {
+  // Add current status to history before updating
+  if (this.status) {
+    this.statusHistory.push({
+      status: this.status,
+      changedAt: new Date(),
+      changedBy: changedBy,
+      notes: notes
+    });
+  }
+  
   this.status = newStatus;
   return await this.save();
 };
@@ -83,6 +125,24 @@ orderSchema.methods.updateStatus = async function(newStatus) {
 orderSchema.methods.updatePaymentStatus = async function(newPaymentStatus) {
   this.paymentStatus = newPaymentStatus;
   return await this.save();
+};
+
+// Method to get status history
+orderSchema.methods.getStatusHistory = function() {
+  return this.statusHistory.sort((a, b) => b.changedAt - a.changedAt);
+};
+
+// Method to get current status info
+orderSchema.methods.getCurrentStatus = function() {
+  return {
+    status: this.status,
+    lastUpdated: this.statusHistory.length > 0 ? 
+      this.statusHistory[this.statusHistory.length - 1].changedAt : 
+      this.createdAt,
+    updatedBy: this.statusHistory.length > 0 ? 
+      this.statusHistory[this.statusHistory.length - 1].changedBy : 
+      'System'
+  };
 };
 
 const Order = mongoose.model('Order', orderSchema);

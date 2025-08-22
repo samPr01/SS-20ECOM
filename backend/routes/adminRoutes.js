@@ -6,30 +6,14 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import Product from '../models/Product.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Middleware to authenticate admin using JWT
-const authenticateAdmin = (req, res, next) => {
-  const token = req.headers.authorization?.replace('Bearer ', '');
-  
-  if (!token) {
-    return res.status(401).json({ message: 'No token provided' });
-  }
-  
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: 'Invalid token' });
-  }
-};
-
-// Protect all admin routes
-router.use(authenticateAdmin);
+// Protect all admin routes with regular auth middleware
+router.use(authMiddleware);
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, '../uploads');
@@ -200,6 +184,67 @@ router.post('/upload-csv', upload.single('csvFile'), async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Server error',
+      error: error.message
+    });
+  }
+});
+
+// Create new product
+router.post('/products', async (req, res) => {
+  try {
+    const { title, description, price, image, sku, category, stock } = req.body;
+
+    // Validate required fields
+    if (!title || !description || !price || !image || !sku) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: title, description, price, image, sku'
+      });
+    }
+
+    // Check if product with same SKU already exists
+    const existingProduct = await Product.findOne({ sku });
+    if (existingProduct) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product with this SKU already exists'
+      });
+    }
+
+    // Create new product
+    const product = new Product({
+      title,
+      description,
+      price: parseFloat(price),
+      image,
+      sku: sku.toUpperCase(),
+      category: category || 'general',
+      stock: parseInt(stock) || 0
+    });
+
+    await product.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Product created successfully',
+      product: {
+        id: product._id,
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        image: product.image,
+        sku: product.sku,
+        category: product.category,
+        stock: product.stock,
+        isActive: product.isActive,
+        createdAt: product.createdAt
+      }
+    });
+  } catch (error) {
+    console.error('Create product error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating product',
       error: error.message
     });
   }

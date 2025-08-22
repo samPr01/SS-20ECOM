@@ -1,7 +1,9 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-import { validateRegister, validateLogin } from '../middleware/validation.js';
+import PasswordReset from '../models/PasswordReset.js';
+import { validateRegister, validateLogin, validatePasswordResetRequest, validatePasswordReset } from '../middleware/validation.js';
+import { sendPasswordResetEmail } from '../utils/mailer.js';
 
 const router = express.Router();
 
@@ -92,6 +94,93 @@ router.post('/login', validateLogin, async (req, res) => {
     console.error('Login error:', error);
     res.status(500).json({ 
       message: 'Error logging in' 
+    });
+  }
+});
+
+// POST /api/auth/reset-password-request - Request password reset
+router.post('/reset-password-request', validatePasswordResetRequest, async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      // Return success even if user doesn't exist for security
+      return res.json({ 
+        message: 'If an account with that email exists, a password reset link has been sent.' 
+      });
+    }
+
+    // Generate reset token
+    const resetToken = PasswordReset.generateToken();
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    // Save reset token
+    const passwordReset = new PasswordReset({
+      userId: user._id,
+      token: resetToken,
+      expiresAt
+    });
+
+    await passwordReset.save();
+
+    // Send reset email
+    const emailSent = await sendPasswordResetEmail(email, resetToken, user.name);
+
+    if (emailSent) {
+      res.json({ 
+        message: 'If an account with that email exists, a password reset link has been sent.' 
+      });
+    } else {
+      // Delete the reset token if email failed
+      await PasswordReset.findByIdAndDelete(passwordReset._id);
+      res.status(500).json({ 
+        message: 'Error sending reset email. Please try again.' 
+      });
+    }
+  } catch (error) {
+    console.error('Password reset request error:', error);
+    res.status(500).json({ 
+      message: 'Error processing password reset request' 
+    });
+  }
+});
+
+// POST /api/auth/reset-password - Reset password with token
+router.post('/reset-password', validatePasswordReset, async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    // Find valid reset token
+    const passwordReset = await PasswordReset.findOne({ 
+      token, 
+      used: false,
+      expiresAt: { $gt: new Date() }
+    }).populate('userId');
+
+    if (!passwordReset) {
+      return res.status(400).json({ 
+        message: 'Invalid or expired reset token' 
+      });
+    }
+
+    // Update user password
+    const user = passwordReset.userId;
+    user.password = password;
+    await user.save();
+
+    // Mark token as used
+    passwordReset.used = true;
+    await passwordReset.save();
+
+    res.json({ 
+      message: 'Password reset successfully. You can now login with your new password.' 
+    });
+  } catch (error) {
+    console.error('Password reset error:', error);
+    res.status(500).json({ 
+      message: 'Error resetting password' 
     });
   }
 });

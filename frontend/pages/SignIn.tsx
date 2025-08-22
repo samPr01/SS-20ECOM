@@ -152,6 +152,15 @@ export default function SignIn() {
                     {loading ? "Signing In..." : "Sign In"}
                   </Button>
                 </form>
+
+                <div className="mt-4 text-center">
+                  <Link 
+                    to="/forgot-password" 
+                    className="text-sm text-purple-600 hover:underline"
+                  >
+                    Forgot your password?
+                  </Link>
+                </div>
               </TabsContent>
 
               <TabsContent value="signup">
